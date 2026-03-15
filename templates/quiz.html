@@ -68,7 +68,7 @@
             <p style="color: rgba(232, 220, 200, 0.6); margin-bottom: 2rem;" id="result-message"></p>
             <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
                 <button class="btn btn-quiz" onclick="startQuiz()">Play Again</button>
-                <a href="/" class="btn btn-secondary">Explore Facts</a>
+                <a href="./" class="btn btn-secondary">Explore Facts</a>
                 <button class="share-btn" onclick="shareResult()" style="margin-top: 0;">
                     &#128279; Share Score
                 </button>
@@ -148,10 +148,24 @@
 
 {% block extra_scripts %}
 <script>
+    let allQuestions = [];
     let quizData = [];
     let currentQuestion = 0;
     let score = 0;
     let selectedDifficulty = 'all';
+
+    // Load all questions once on page load
+    fetch('data/quiz.json')
+        .then(r => r.json())
+        .then(data => { allQuestions = data; });
+
+    function shuffle(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
 
     function setDifficulty(diff, btn) {
         selectedDifficulty = diff;
@@ -159,30 +173,42 @@
         btn.classList.add('active-diff');
     }
 
-    async function startQuiz() {
+    function startQuiz() {
         currentQuestion = 0;
         score = 0;
         document.getElementById('score').textContent = '0';
 
-        try {
-            const resp = await fetch('/api/quiz?difficulty=' + selectedDifficulty);
-            quizData = await resp.json();
+        // Filter by difficulty
+        let filtered = selectedDifficulty === 'all'
+            ? [...allQuestions]
+            : allQuestions.filter(q => q.difficulty === selectedDifficulty);
 
-            if (quizData.length === 0) {
-                alert('No questions available for this difficulty. Try "All Levels".');
-                return;
-            }
-
-            document.getElementById('quiz-start').style.display = 'none';
-            document.getElementById('quiz-results').style.display = 'none';
-            document.getElementById('quiz-game').style.display = 'block';
-            document.getElementById('q-total').textContent = quizData.length;
-
-            renderProgressDots();
-            showQuestion();
-        } catch (e) {
-            console.error('Failed to load quiz:', e);
+        if (filtered.length === 0) {
+            alert('No questions available for this difficulty. Try "All Levels".');
+            return;
         }
+
+        // Shuffle and take up to 10
+        shuffle(filtered);
+        quizData = filtered.slice(0, 10).map(q => {
+            let answers = [q.correct_answer, q.wrong_answer_1, q.wrong_answer_2, q.wrong_answer_3];
+            shuffle(answers);
+            return {
+                id: q.id,
+                question: q.question,
+                answers: answers,
+                correct: q.correct_answer,
+                difficulty: q.difficulty,
+            };
+        });
+
+        document.getElementById('quiz-start').style.display = 'none';
+        document.getElementById('quiz-results').style.display = 'none';
+        document.getElementById('quiz-game').style.display = 'block';
+        document.getElementById('q-total').textContent = quizData.length;
+
+        renderProgressDots();
+        showQuestion();
     }
 
     function renderProgressDots() {

@@ -9,10 +9,9 @@
 
 <div class="species-grid">
     {% for sp in species_list %}
-    <a href="/species/{{ sp['common_name'] }}" class="species-card slide-up" style="animation-delay: {{ loop.index0 * 0.05 }}s;">
-        {% set img_url = url_for('static', filename='images/' + sp['image_filename']) %}
+    <a href="species/{{ slug_map[sp['common_name']] }}/" class="species-card slide-up" style="animation-delay: {{ loop.index0 * 0.05 }}s;">
         <div style="position: relative; height: 180px; background: linear-gradient(135deg, #2a5a1e, #3d7a2e); overflow: hidden;">
-            <img src="{{ img_url }}" alt="{{ sp['common_name'] }}" class="species-card-img"
+            <img src="images/{{ sp['image_filename'] }}" alt="{{ sp['common_name'] }}" class="species-card-img"
                  onerror="this.style.display='none';"
                  loading="lazy">
             {% set status = sp['conservation_status'] %}

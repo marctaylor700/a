@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Lemur Facts{% endblock %}</title>
+    <base href="{{ base_url }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -451,10 +452,10 @@
     <header>
         <h1><span>&#129431;</span> Lemur Facts</h1>
         <nav>
-            <a href="/" {% if request.path == '/' %}class="active"{% endif %}>Random Fact</a>
-            <a href="/all" {% if request.path == '/all' %}class="active"{% endif %}>All Species</a>
-            <a href="/conservation" {% if request.path == '/conservation' %}class="active"{% endif %}>Conservation</a>
-            <a href="/quiz" {% if request.path == '/quiz' %}class="active"{% endif %}>Quiz</a>
+            <a href="./" {% if active_page == 'index' %}class="active"{% endif %}>Random Fact</a>
+            <a href="all.html" {% if active_page == 'all' %}class="active"{% endif %}>All Species</a>
+            <a href="conservation.html" {% if active_page == 'conservation' %}class="active"{% endif %}>Conservation</a>
+            <a href="quiz.html" {% if active_page == 'quiz' %}class="active"{% endif %}>Quiz</a>
         </nav>
     </header>
     <main>

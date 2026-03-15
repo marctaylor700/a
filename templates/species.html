@@ -3,10 +3,8 @@
 
 {% block content %}
 <div class="card slide-up">
-    {% set img_path = "images/" + facts[0]["image_filename"] %}
-    {% set img_url = url_for('static', filename=img_path) %}
     <div class="placeholder-img" id="img-container">
-        <img src="{{ img_url }}" alt="{{ species }}"
+        <img src="images/{{ facts[0]['image_filename'] }}" alt="{{ species }}"
              onerror="this.style.display='none'; this.parentElement.innerHTML='&#129431;';"
              style="width:100%; height:100%; object-fit:cover;">
     </div>
@@ -71,8 +69,8 @@
             {% endfor %}
         </ul>
         <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1.5rem;">
-            <a href="/" class="btn">Random Fact</a>
-            <a href="/all" class="btn btn-secondary">All Species</a>
+            <a href="./" class="btn">Random Fact</a>
+            <a href="all.html" class="btn btn-secondary">All Species</a>
         </div>
     </div>
 </div>
