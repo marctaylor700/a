@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}All Lemur Species{% endblock %}
+
+{% block content %}
+<div class="page-header fade-in">
+    <h2>All Lemur Species</h2>
+    <p>Explore {{ species_list|length }} species of Madagascar's most iconic primates</p>
+</div>
+
+<div class="species-grid">
+    {% for sp in species_list %}
+    <a href="/species/{{ sp['common_name'] }}" class="species-card slide-up" style="animation-delay: {{ loop.index0 * 0.05 }}s;">
+        {% set img_url = url_for('static', filename='images/' + sp['image_filename']) %}
+        <div style="position: relative; height: 180px; background: linear-gradient(135deg, #2a5a1e, #3d7a2e); overflow: hidden;">
+            <img src="{{ img_url }}" alt="{{ sp['common_name'] }}" class="species-card-img"
+                 onerror="this.style.display='none';"
+                 loading="lazy">
+            {% set status = sp['conservation_status'] %}
+            <div style="position: absolute; top: 0.75rem; right: 0.75rem;">
+                {% if status == "Critically Endangered" %}
+                    <span class="conservation-badge badge-cr">CR</span>
+                {% elif status == "Endangered" %}
+                    <span class="conservation-badge badge-en">EN</span>
+                {% elif status == "Vulnerable" %}
+                    <span class="conservation-badge badge-vu">VU</span>
+                {% else %}
+                    <span class="conservation-badge badge-lc">LC</span>
+                {% endif %}
+            </div>
+        </div>
+        <div class="species-card-body">
+            <div class="species-card-name">{{ sp['common_name'] }}</div>
+            <div class="species-card-sci">{{ sp['scientific_name'] }}</div>
+            <div class="species-card-meta">
+                <span>{{ sp['fact_count'] }} facts</span>
+                <span>{{ sp['weight_range'] }}</span>
+            </div>
+        </div>
+    </a>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,321 @@
+{% extends "base.html" %}
+{% block title %}Lemur Quiz - Test Your Knowledge{% endblock %}
+
+{% block content %}
+<div class="page-header fade-in">
+    <h2>Lemur Quiz</h2>
+    <p>Test your knowledge about Madagascar's amazing primates!</p>
+</div>
+
+<!-- Start Screen -->
+<div id="quiz-start" class="card slide-up">
+    <div class="card-body" style="text-align: center; padding: 3rem 2rem;">
+        <div style="font-size: 5rem; margin-bottom: 1rem;">&#129431;</div>
+        <h3 style="color: #a8d5a2; font-size: 1.5rem; margin-bottom: 1rem;">Ready to Test Your Lemur Knowledge?</h3>
+        <p class="fact-text" style="font-size: 1rem; margin-bottom: 2rem;">
+            Answer 10 multiple-choice questions about lemurs, their habitats, and conservation.
+        </p>
+        <div style="margin-bottom: 1.5rem;">
+            <label style="display: block; margin-bottom: 0.75rem; color: rgba(232, 220, 200, 0.6); font-size: 0.9rem;">Choose difficulty:</label>
+            <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
+                <button class="btn btn-secondary difficulty-btn active-diff" data-difficulty="all" onclick="setDifficulty('all', this)">All Levels</button>
+                <button class="btn btn-secondary difficulty-btn" data-difficulty="easy" onclick="setDifficulty('easy', this)">Easy</button>
+                <button class="btn btn-secondary difficulty-btn" data-difficulty="medium" onclick="setDifficulty('medium', this)">Medium</button>
+                <button class="btn btn-secondary difficulty-btn" data-difficulty="hard" onclick="setDifficulty('hard', this)">Hard</button>
+            </div>
+        </div>
+        <button class="btn btn-quiz" onclick="startQuiz()" style="font-size: 1.15rem; padding: 1rem 2.5rem;">
+            Start Quiz!
+        </button>
+    </div>
+</div>
+
+<!-- Quiz Screen -->
+<div id="quiz-game" style="display: none;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <div style="display: flex; gap: 0.5rem;" id="progress-dots"></div>
+        <div style="color: rgba(232, 220, 200, 0.6); font-size: 0.9rem;">
+            Score: <span id="score" style="color: #f4d35e; font-weight: 700;">0</span>
+        </div>
+    </div>
+    <div class="card" id="question-card">
+        <div class="card-body" style="padding: 2rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <span class="category-tag cat-science" id="q-difficulty">Medium</span>
+                <span style="color: rgba(232, 220, 200, 0.5); font-size: 0.9rem;">
+                    Question <span id="q-number">1</span> of <span id="q-total">10</span>
+                </span>
+            </div>
+            <h3 style="color: #e8dcc8; font-size: 1.25rem; line-height: 1.6; margin-bottom: 1.5rem;" id="q-text"></h3>
+            <div id="answers" style="display: grid; gap: 0.75rem;"></div>
+            <button class="btn" id="next-btn" onclick="nextQuestion()" style="display: none; margin-top: 1.5rem;">
+                Next Question
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Results Screen -->
+<div id="quiz-results" style="display: none;">
+    <div class="card slide-up">
+        <div class="card-body" style="text-align: center; padding: 3rem 2rem;">
+            <div style="font-size: 5rem; margin-bottom: 1rem;" id="result-emoji">&#129431;</div>
+            <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem;" id="result-title"></h3>
+            <p style="font-size: 3rem; font-weight: 800; margin-bottom: 0.5rem;">
+                <span id="final-score" style="color: #f4d35e;"></span>
+                <span style="color: rgba(232, 220, 200, 0.4); font-size: 1.5rem;">/ <span id="final-total"></span></span>
+            </p>
+            <p style="color: rgba(232, 220, 200, 0.6); margin-bottom: 2rem;" id="result-message"></p>
+            <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
+                <button class="btn btn-quiz" onclick="startQuiz()">Play Again</button>
+                <a href="/" class="btn btn-secondary">Explore Facts</a>
+                <button class="share-btn" onclick="shareResult()" style="margin-top: 0;">
+                    &#128279; Share Score
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_head %}
+<style>
+    .answer-btn {
+        display: block;
+        width: 100%;
+        text-align: left;
+        background: rgba(255, 255, 255, 0.06);
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        padding: 1rem 1.25rem;
+        color: #e8dcc8;
+        font-size: 1rem;
+        font-family: inherit;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-weight: 600;
+    }
+
+    .answer-btn:hover:not(.answered) {
+        background: rgba(255, 255, 255, 0.12);
+        border-color: rgba(244, 211, 94, 0.4);
+        transform: translateX(4px);
+    }
+
+    .answer-btn.correct {
+        background: rgba(40, 167, 69, 0.2);
+        border-color: #71d88a;
+        color: #71d88a;
+    }
+
+    .answer-btn.wrong {
+        background: rgba(220, 53, 69, 0.2);
+        border-color: #ff6b7a;
+        color: #ff6b7a;
+    }
+
+    .answer-btn.answered {
+        cursor: default;
+        opacity: 0.7;
+    }
+
+    .answer-btn.answered.correct {
+        opacity: 1;
+    }
+
+    .progress-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.15);
+        transition: all 0.3s;
+    }
+
+    .progress-dot.current { background: #f4d35e; transform: scale(1.2); }
+    .progress-dot.correct-dot { background: #71d88a; }
+    .progress-dot.wrong-dot { background: #ff6b7a; }
+
+    .active-diff {
+        background: linear-gradient(135deg, rgba(244, 211, 94, 0.3), rgba(244, 211, 94, 0.15)) !important;
+        border-color: rgba(244, 211, 94, 0.5) !important;
+        color: #f4d35e !important;
+    }
+
+    .difficulty-btn { margin-top: 0; }
+</style>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    let quizData = [];
+    let currentQuestion = 0;
+    let score = 0;
+    let selectedDifficulty = 'all';
+
+    function setDifficulty(diff, btn) {
+        selectedDifficulty = diff;
+        document.querySelectorAll('.difficulty-btn').forEach(b => b.classList.remove('active-diff'));
+        btn.classList.add('active-diff');
+    }
+
+    async function startQuiz() {
+        currentQuestion = 0;
+        score = 0;
+        document.getElementById('score').textContent = '0';
+
+        try {
+            const resp = await fetch('/api/quiz?difficulty=' + selectedDifficulty);
+            quizData = await resp.json();
+
+            if (quizData.length === 0) {
+                alert('No questions available for this difficulty. Try "All Levels".');
+                return;
+            }
+
+            document.getElementById('quiz-start').style.display = 'none';
+            document.getElementById('quiz-results').style.display = 'none';
+            document.getElementById('quiz-game').style.display = 'block';
+            document.getElementById('q-total').textContent = quizData.length;
+
+            renderProgressDots();
+            showQuestion();
+        } catch (e) {
+            console.error('Failed to load quiz:', e);
+        }
+    }
+
+    function renderProgressDots() {
+        const container = document.getElementById('progress-dots');
+        container.innerHTML = '';
+        for (let i = 0; i < quizData.length; i++) {
+            const dot = document.createElement('div');
+            dot.className = 'progress-dot' + (i === 0 ? ' current' : '');
+            dot.id = 'dot-' + i;
+            container.appendChild(dot);
+        }
+    }
+
+    function showQuestion() {
+        const q = quizData[currentQuestion];
+        document.getElementById('q-number').textContent = currentQuestion + 1;
+        document.getElementById('q-text').textContent = q.question;
+
+        const diffTag = document.getElementById('q-difficulty');
+        diffTag.textContent = q.difficulty;
+        diffTag.className = 'category-tag';
+        if (q.difficulty === 'easy') diffTag.classList.add('cat-ecology');
+        else if (q.difficulty === 'medium') diffTag.classList.add('cat-behavior');
+        else diffTag.classList.add('cat-conservation');
+
+        const answersDiv = document.getElementById('answers');
+        answersDiv.innerHTML = '';
+        q.answers.forEach((answer, i) => {
+            const btn = document.createElement('button');
+            btn.className = 'answer-btn';
+            btn.textContent = answer;
+            btn.onclick = () => selectAnswer(btn, answer, q.correct);
+            answersDiv.appendChild(btn);
+        });
+
+        document.getElementById('next-btn').style.display = 'none';
+
+        // Update dots
+        document.querySelectorAll('.progress-dot').forEach((d, i) => {
+            if (i === currentQuestion) d.classList.add('current');
+            else d.classList.remove('current');
+        });
+
+        // Animate card
+        const card = document.getElementById('question-card');
+        card.style.opacity = '0';
+        card.style.transform = 'translateX(20px)';
+        requestAnimationFrame(() => {
+            card.style.transition = 'opacity 0.3s, transform 0.3s';
+            card.style.opacity = '1';
+            card.style.transform = 'translateX(0)';
+        });
+    }
+
+    function selectAnswer(btn, selected, correct) {
+        const buttons = document.querySelectorAll('.answer-btn');
+        buttons.forEach(b => {
+            b.classList.add('answered');
+            if (b.textContent === correct) b.classList.add('correct');
+        });
+
+        if (selected === correct) {
+            btn.classList.add('correct');
+            score++;
+            document.getElementById('score').textContent = score;
+            document.getElementById('dot-' + currentQuestion).classList.add('correct-dot');
+        } else {
+            btn.classList.add('wrong');
+            document.getElementById('dot-' + currentQuestion).classList.add('wrong-dot');
+        }
+
+        const nextBtn = document.getElementById('next-btn');
+        if (currentQuestion < quizData.length - 1) {
+            nextBtn.textContent = 'Next Question';
+        } else {
+            nextBtn.textContent = 'See Results';
+        }
+        nextBtn.style.display = 'inline-block';
+    }
+
+    function nextQuestion() {
+        currentQuestion++;
+        if (currentQuestion < quizData.length) {
+            showQuestion();
+        } else {
+            showResults();
+        }
+    }
+
+    function showResults() {
+        document.getElementById('quiz-game').style.display = 'none';
+        document.getElementById('quiz-results').style.display = 'block';
+
+        const total = quizData.length;
+        const pct = Math.round((score / total) * 100);
+
+        document.getElementById('final-score').textContent = score;
+        document.getElementById('final-total').textContent = total;
+
+        let emoji, title, message;
+        if (pct === 100) {
+            emoji = '&#127942;';
+            title = 'Perfect Score!';
+            message = "You're a true lemur expert! Consider a career in primatology!";
+        } else if (pct >= 80) {
+            emoji = '&#11088;';
+            title = 'Amazing!';
+            message = "You really know your lemurs! Just a few more facts to learn.";
+        } else if (pct >= 60) {
+            emoji = '&#129431;';
+            title = 'Great Job!';
+            message = "Solid knowledge! Explore more facts to become an expert.";
+        } else if (pct >= 40) {
+            emoji = '&#128522;';
+            title = 'Not Bad!';
+            message = "You know some lemur basics. Check out the species pages to learn more!";
+        } else {
+            emoji = '&#128064;';
+            title = 'Keep Learning!';
+            message = "Lemurs are fascinating - explore the facts section and try again!";
+        }
+
+        document.getElementById('result-emoji').innerHTML = emoji;
+        document.getElementById('result-title').textContent = title;
+        document.getElementById('result-title').style.color = pct >= 60 ? '#a8d5a2' : '#f4d35e';
+        document.getElementById('result-message').textContent = message;
+    }
+
+    function shareResult() {
+        const total = quizData.length;
+        const pct = Math.round((score / total) * 100);
+        const text = `I scored ${score}/${total} (${pct}%) on the Lemur Quiz! \u{1F9AB} Test your knowledge too!`;
+        shareFact(text);
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Species Not Found{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body" style="text-align: center; padding: 3rem;">
+        <p style="font-size: 4rem; margin-bottom: 1rem;">&#129431;</p>
+        <h2 style="color: #f4d35e; margin-bottom: 1rem;">Species Not Found</h2>
+        <p class="fact-text">No facts found for "{{ species }}".</p>
+        <a href="/" class="btn">Back to Random Facts</a>
+    </div>
+</div>
+{% endblock %}

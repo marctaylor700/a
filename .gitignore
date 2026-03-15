@@ -1,0 +1,5 @@
+venv/
+__pycache__/
+*.pyc
+lemurs.db
+.mcp.json
