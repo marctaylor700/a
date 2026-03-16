@@ -9,7 +9,7 @@
 
 <div class="species-grid">
     {% for sp in species_list %}
-    <a href="species/{{ slug_map[sp['common_name']] }}/" class="species-card slide-up" style="animation-delay: {{ loop.index0 * 0.05 }}s;">
+    <a href="species/{{ slug_map[sp['common_name']] }}/" class="species-card slide-up" style="animation-delay: {{ [loop.index0 * 0.05, 0.4] | min }}s;">
         <div style="position: relative; height: 180px; background: linear-gradient(135deg, #2a5a1e, #3d7a2e); overflow: hidden;">
             <img src="images/{{ sp['image_filename'] }}" alt="{{ sp['common_name'] }}" class="species-card-img"
                  onerror="this.style.display='none';"

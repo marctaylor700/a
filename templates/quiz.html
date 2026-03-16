@@ -136,10 +136,10 @@
     .progress-dot.correct-dot { background: #71d88a; }
     .progress-dot.wrong-dot { background: #ff6b7a; }
 
-    .active-diff {
-        background: linear-gradient(135deg, rgba(244, 211, 94, 0.3), rgba(244, 211, 94, 0.15)) !important;
-        border-color: rgba(244, 211, 94, 0.5) !important;
-        color: #f4d35e !important;
+    .difficulty-btn.active-diff {
+        background: linear-gradient(135deg, rgba(244, 211, 94, 0.3), rgba(244, 211, 94, 0.15));
+        border-color: rgba(244, 211, 94, 0.5);
+        color: #f4d35e;
     }
 
     .difficulty-btn { margin-top: 0; }
@@ -157,7 +157,8 @@
     // Load all questions once on page load
     fetch('data/quiz.json')
         .then(r => r.json())
-        .then(data => { allQuestions = data; });
+        .then(data => { allQuestions = data; })
+        .catch(() => showToast('Failed to load quiz — please refresh'));
 
     function shuffle(arr) {
         for (let i = arr.length - 1; i > 0; i--) {
@@ -184,7 +185,7 @@
             : allQuestions.filter(q => q.difficulty === selectedDifficulty);
 
         if (filtered.length === 0) {
-            alert('No questions available for this difficulty. Try "All Levels".');
+            showToast('No questions available for this difficulty. Try "All Levels".');
             return;
         }
 

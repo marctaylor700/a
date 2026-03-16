@@ -22,7 +22,7 @@ STATIC_DIR = os.path.join(BASE_DIR, "static")
 
 # For GitHub Pages project site at https://<user>.github.io/<repo>/
 # Override with BASE_URL env var, or change default for custom domains
-BASE_URL = os.environ.get("BASE_URL", "/a/")
+BASE_URL = os.environ.get("BASE_URL", "/")
 
 
 def slugify(name):
