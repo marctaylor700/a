@@ -11,34 +11,146 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
+        :root {
+            --primary-green: #4a8c3f;
+            --secondary-green: #3a7232;
+            --accent-yellow: #f4d35e;
+            --light-cream: #f0e6d3;
+            --dark-text: #e8dcc8;
+            --card-bg: rgba(255, 255, 255, 0.07);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --glass-effect: rgba(255, 255, 255, 0.05);
+        }
+
         body {
             font-family: 'Nunito', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #0f2b1a 0%, #1a472a 30%, #2d5016 60%, #1a3a1a 100%);
             min-height: 100vh;
-            color: #f0e6d3;
+            color: var(--dark-text);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Floating leaves animation */
+        .floating-leaves {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .leaf {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(45deg, #a8d5a2, #8bc34a);
+            border-radius: 50% 0 50% 50%;
+            opacity: 0.7;
+            animation: float 15s infinite linear;
+        }
+
+        .leaf:nth-child(2n) {
+            background: linear-gradient(45deg, #c8e6c9, #a5d6a7);
+            border-radius: 0 50% 50% 0;
+        }
+
+        .leaf:nth-child(3n) {
+            background: linear-gradient(45deg, #e8f5e9, #c5e1a5);
+            border-radius: 50% 50% 0 50%;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(-100px) rotate(0deg); }
+            100% { transform: translateY(110vh) rotate(360deg); }
+        }
+
+        /* Organic background shapes */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50px;
+            right: -50px;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(168, 213, 162, 0.1) 0%, rgba(168, 213, 162, 0) 70%);
+            border-radius: 45% 55% 35% 65% / 35% 40% 60% 65%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -100px;
+            left: -100px;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(244, 211, 94, 0.08) 0%, rgba(244, 211, 94, 0) 70%);
+            border-radius: 35% 65% 55% 45% / 65% 35% 65% 35%;
+            z-index: 0;
+            pointer-events: none;
         }
 
         header {
-            background: rgba(0, 0, 0, 0.4);
-            padding: 1rem 2rem;
+            background: rgba(15, 43, 26, 0.6);
+            padding: 1.5rem 2rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(168, 213, 162, 0.1);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(168, 213, 162, 0.2);
             position: sticky;
             top: 0;
             z-index: 100;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        header.scrolled {
+            padding: 1rem 2rem;
+            background: rgba(15, 43, 26, 0.8);
+            border-bottom-width: 1px;
         }
 
         header h1 {
-            font-size: 1.8rem;
-            color: #a8d5a2;
+            font-size: 2rem;
+            background: linear-gradient(135deg, #a8d5a2, #f4d35e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             letter-spacing: 2px;
             font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
         }
 
-        header h1 span { color: #f4d35e; }
+        header h1::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #f4d35e, transparent);
+            border-radius: 3px;
+        }
+
+        header h1 span {
+            font-size: 2.2rem;
+            display: inline-block;
+            animation: gentleBounce 3s infinite ease-in-out;
+        }
+
+        @keyframes gentleBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
 
         nav {
             display: flex;
@@ -50,21 +162,45 @@
         nav a {
             color: #c8dfc4;
             text-decoration: none;
-            font-size: 0.9rem;
-            transition: all 0.2s;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            padding: 0.6rem 1.2rem;
+            border-radius: 12px;
             font-weight: 600;
+            position: relative;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        nav a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(244, 211, 94, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        nav a:hover::before {
+            left: 100%;
         }
 
         nav a:hover {
             color: #f4d35e;
-            background: rgba(244, 211, 94, 0.1);
+            background: rgba(244, 211, 94, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(244, 211, 94, 0.2);
+            border-color: rgba(244, 211, 94, 0.3);
         }
 
         nav a.active {
             color: #f4d35e;
-            background: rgba(244, 211, 94, 0.15);
+            background: rgba(244, 211, 94, 0.2);
+            border-color: rgba(244, 211, 94, 0.4);
+            box-shadow: 0 2px 8px rgba(244, 211, 94, 0.2);
         }
 
         main {
@@ -74,18 +210,34 @@
         }
 
         .card {
-            background: rgba(255, 255, 255, 0.07);
-            border-radius: 16px;
+            background: var(--card-bg);
+            border-radius: 20px;
             overflow: hidden;
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 2rem;
-            transition: transform 0.2s, box-shadow 0.2s;
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--card-border);
+            margin-bottom: 2.5rem;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+            border-radius: 20px;
+            pointer-events: none;
+            opacity: 0.5;
         }
 
         .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transform: translateY(-8px) rotateX(2deg) rotateY(1deg);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3), 
+                       0 8px 16px rgba(244, 211, 94, 0.1);
         }
 
         .card img {
@@ -93,9 +245,18 @@
             height: 420px;
             object-fit: cover;
             display: block;
+            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
-        .card-body { padding: 2rem; }
+        .card:hover img {
+            transform: scale(1.05) rotate(1deg);
+        }
+
+        .card-body {
+            padding: 2.5rem;
+            position: relative;
+            z-index: 2;
+        }
 
         .species-tag {
             display: inline-block;
@@ -135,25 +296,53 @@
             display: inline-block;
             background: linear-gradient(135deg, #4a8c3f, #3a7232);
             color: #fff;
-            padding: 0.75rem 1.5rem;
+            padding: 0.85rem 1.75rem;
             border: none;
-            border-radius: 10px;
-            font-size: 1rem;
+            border-radius: 12px;
+            font-size: 1.05rem;
             font-weight: 700;
             cursor: pointer;
             text-decoration: none;
-            transition: all 0.2s;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             margin-top: 1.5rem;
             font-family: inherit;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(74, 140, 63, 0.2);
+            transform: translateY(0);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s;
+        }
+
+        .btn:hover::before {
+            transform: translateX(100%);
         }
 
         .btn:hover {
             background: linear-gradient(135deg, #5ca84e, #4a8c3f);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 16px rgba(74, 140, 63, 0.4);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 6px 24px rgba(74, 140, 63, 0.5), 
+                       0 2px 8px rgba(244, 211, 94, 0.3);
         }
 
-        .btn:active { transform: translateY(0); }
+        .btn:active {
+            transform: translateY(-1px) scale(0.98);
+            box-shadow: 0 2px 8px rgba(74, 140, 63, 0.3);
+        }
+
+        .btn:active::before {
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+        }
 
         .btn-secondary {
             background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.08));
@@ -410,22 +599,46 @@
         .share-btn {
             display: inline-flex;
             align-items: center;
-            gap: 0.4rem;
-            background: rgba(255, 255, 255, 0.1);
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.15);
             color: #c8dfc4;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            font-size: 0.85rem;
+            padding: 0.6rem 1.2rem;
+            border-radius: 12px;
+            font-size: 0.9rem;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             font-family: inherit;
             font-weight: 600;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .share-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(244, 211, 94, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .share-btn:hover::before {
+            left: 100%;
         }
 
         .share-btn:hover {
-            background: rgba(255, 255, 255, 0.18);
+            background: rgba(244, 211, 94, 0.2);
             color: #f4d35e;
+            border-color: rgba(244, 211, 94, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(244, 211, 94, 0.3);
+        }
+
+        .share-btn:active {
+            transform: translateY(-1px);
         }
 
         .copied-toast {
@@ -513,6 +726,54 @@
     </footer>
     <div class="copied-toast" id="toast">Copied to clipboard!</div>
     <script>
+        // Floating leaves animation
+        function createFloatingLeaves() {
+            const container = document.createElement('div');
+            container.className = 'floating-leaves';
+            document.body.appendChild(container);
+
+            const leafCount = 12;
+            for (let i = 0; i < leafCount; i++) {
+                const leaf = document.createElement('div');
+                leaf.className = 'leaf';
+                leaf.style.left = Math.random() * 100 + '%';
+                leaf.style.top = Math.random() * 100 + '%';
+                leaf.style.animationDelay = Math.random() * 15 + 's';
+                leaf.style.animationDuration = (10 + Math.random() * 10) + 's';
+                leaf.style.width = (15 + Math.random() * 10) + 'px';
+                leaf.style.height = (15 + Math.random() * 10) + 'px';
+                leaf.style.opacity = 0.5 + Math.random() * 0.3;
+                container.appendChild(leaf);
+            }
+        }
+
+        // Header scroll effect
+        function setupHeaderScroll() {
+            const header = document.querySelector('header');
+            let lastScroll = 0;
+
+            window.addEventListener('scroll', () => {
+                const currentScroll = window.pageYOffset;
+                if (currentScroll <= 0) {
+                    header.classList.remove('scrolled');
+                    return;
+                }
+
+                if (currentScroll > 50 && currentScroll > lastScroll) {
+                    header.classList.add('scrolled');
+                } else if (currentScroll < lastScroll) {
+                    header.classList.remove('scrolled');
+                }
+                lastScroll = currentScroll;
+            });
+        }
+
+        // Initialize animations when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            createFloatingLeaves();
+            setupHeaderScroll();
+        });
+
         function showToast(msg) {
             const toast = document.getElementById('toast');
             toast.textContent = msg || 'Copied to clipboard!';
