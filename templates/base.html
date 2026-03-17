@@ -522,11 +522,40 @@
 
         function shareFact(text) {
             const shareText = text + ' - Lemur Facts';
+            const shareUrl = window.location.href;
+            
+            // Try Web Share API first (mobile browsers)
             if (navigator.share) {
-                navigator.share({ text: shareText }).catch(() => {});
+                navigator.share({
+                    title: 'Lemur Facts',
+                    text: shareText,
+                    url: shareUrl
+                }).then(() => {
+                    showToast('Shared successfully!');
+                }).catch((error) => {
+                    if (error.name !== 'AbortError') {
+                        // Fallback to clipboard if user didn't cancel
+                        fallbackToClipboard(shareText);
+                    }
+                });
             } else if (navigator.clipboard) {
-                navigator.clipboard.writeText(shareText).then(() => showToast());
+                // Fallback to clipboard API
+                fallbackToClipboard(shareText);
+            } else {
+                // Final fallback: prompt user to copy manually
+                prompt('Copy this text to share:', shareText);
+                showToast('Copied to clipboard!');
             }
+        }
+        
+        function fallbackToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('Copied to clipboard!');
+            }).catch(() => {
+                // If clipboard fails, use prompt as last resort
+                prompt('Copy this text to share:', text);
+                showToast('Copied to clipboard!');
+            });
         }
 
         // Search functionality
@@ -580,9 +609,7 @@
                                         <div>
                                             <div style="color: #a8d5a2; font-weight: 700;">${item.species}</div>
                                             <div style="color: #e8dcc8; font-size: 0.85rem; margin-top: 0.25rem;">${item.fact}</div>
-                                            {% if item.category %}
-                                            <span class="category-tag cat-${item.category}" style="margin-top: 0.25rem; font-size: 0.7rem;">${item.category}</span>
-                                            {% endif %}
+                                            ${item.category ? `<span class="category-tag cat-${item.category}" style="margin-top: 0.25rem; font-size: 0.7rem;">${item.category}</span>` : ''}
                                         </div>
                                     </div>
                                 `;
