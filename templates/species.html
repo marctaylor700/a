@@ -27,7 +27,7 @@
         </div>
 
         {% if species_info %}
-        <p style="color: rgba(232, 220, 200, 0.5); font-style: italic; margin-bottom: 1rem;">
+        <p style="color: var(--text-muted); font-style: italic; margin-bottom: 1rem;">
             {{ species_info["scientific_name"] }}
         </p>
 
@@ -53,7 +53,7 @@
         </div>
         {% endif %}
 
-        <h3 style="color: #a8d5a2; margin: 2rem 0 1rem; font-size: 1.2rem;">
+        <h3 style="color: var(--color-primary); margin: 2rem 0 1rem; font-size: 1.2rem;">
             Facts ({{ facts|length }})
         </h3>
         <ul class="fact-list">

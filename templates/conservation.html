@@ -9,7 +9,7 @@
 
 <div class="card slide-up" style="margin-bottom: 2rem;">
     <div class="card-body">
-        <h3 style="color: #f4d35e; margin-bottom: 1rem; font-size: 1.3rem;">Why Lemurs Matter</h3>
+        <h3 style="color: var(--color-accent); margin-bottom: 1rem; font-size: 1.3rem;">Why Lemurs Matter</h3>
         <p class="fact-text" style="font-size: 1.05rem; margin-bottom: 1rem;">
             Lemurs are found nowhere else on Earth except Madagascar and its neighboring islands. They have evolved in isolation
             for over 60 million years, creating an extraordinary diversity of over 100 species. As seed dispersers and pollinators,
@@ -23,19 +23,19 @@
 
         <div class="info-grid" style="margin-top: 1.5rem;">
             <div class="info-item" style="text-align: center;">
-                <div style="font-size: 2rem; font-weight: 800; color: #ff6b7a;">90%</div>
+                <div style="font-size: 2rem; font-weight: 800; color: var(--badge-cr-color);">90%</div>
                 <div class="info-label" style="margin-top: 0.3rem;">Forest lost</div>
             </div>
             <div class="info-item" style="text-align: center;">
-                <div style="font-size: 2rem; font-weight: 800; color: #ffb347;">100+</div>
+                <div style="font-size: 2rem; font-weight: 800; color: var(--badge-en-color);">100+</div>
                 <div class="info-label" style="margin-top: 0.3rem;">Known species</div>
             </div>
             <div class="info-item" style="text-align: center;">
-                <div style="font-size: 2rem; font-weight: 800; color: #ffd700;">60M</div>
+                <div style="font-size: 2rem; font-weight: 800; color: var(--badge-vu-color);">60M</div>
                 <div class="info-label" style="margin-top: 0.3rem;">Years of evolution</div>
             </div>
             <div class="info-item" style="text-align: center;">
-                <div style="font-size: 2rem; font-weight: 800; color: #ff6b7a;">90%+</div>
+                <div style="font-size: 2rem; font-weight: 800; color: var(--badge-cr-color);">90%+</div>
                 <div class="info-label" style="margin-top: 0.3rem;">Species threatened</div>
             </div>
         </div>
@@ -48,18 +48,18 @@
         <h3 style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
             {% if status == "Critically Endangered" %}
                 <span class="conservation-badge badge-cr" style="font-size: 0.85rem;">CR</span>
-                <span style="color: #ff6b7a;">Critically Endangered</span>
+                <span style="color: var(--badge-cr-color);">Critically Endangered</span>
             {% elif status == "Endangered" %}
                 <span class="conservation-badge badge-en" style="font-size: 0.85rem;">EN</span>
-                <span style="color: #ffb347;">Endangered</span>
+                <span style="color: var(--badge-en-color);">Endangered</span>
             {% elif status == "Vulnerable" %}
                 <span class="conservation-badge badge-vu" style="font-size: 0.85rem;">VU</span>
-                <span style="color: #ffd700;">Vulnerable</span>
+                <span style="color: var(--badge-vu-color);">Vulnerable</span>
             {% else %}
                 <span class="conservation-badge badge-lc" style="font-size: 0.85rem;">LC</span>
-                <span style="color: #71d88a;">Least Concern</span>
+                <span style="color: var(--badge-lc-color);">Least Concern</span>
             {% endif %}
-            <span style="color: rgba(232, 220, 200, 0.4); font-size: 0.9rem; font-weight: 400;">
+            <span style="color: var(--text-faint); font-size: 0.9rem; font-weight: 400;">
                 ({{ species_by_status[status]|length }} species)
             </span>
         </h3>
@@ -74,12 +74,12 @@
                          loading="lazy">
                     <div style="flex: 1; min-width: 0;">
                         <a href="species/{{ slug_map[sp['common_name']] }}/" style="text-decoration: none;">
-                            <div style="color: #a8d5a2; font-weight: 700; font-size: 1.1rem;">{{ sp['common_name'] }}</div>
+                            <div style="color: var(--color-primary); font-weight: 700; font-size: 1.1rem;">{{ sp['common_name'] }}</div>
                         </a>
-                        <div style="color: rgba(232, 220, 200, 0.5); font-style: italic; font-size: 0.85rem; margin-bottom: 0.5rem;">
+                        <div style="color: var(--text-muted); font-style: italic; font-size: 0.85rem; margin-bottom: 0.5rem;">
                             {{ sp['scientific_name'] }}
                         </div>
-                        <p style="color: #e8dcc8; font-size: 0.9rem; line-height: 1.6;">{{ sp['description'][:200] }}{% if sp['description']|length > 200 %}...{% endif %}</p>
+                        <p style="color: var(--text-primary); font-size: 0.9rem; line-height: 1.6;">{{ sp['description'][:200] }}{% if sp['description']|length > 200 %}...{% endif %}</p>
                     </div>
                 </div>
             </div>
@@ -89,9 +89,9 @@
     {% endif %}
 {% endfor %}
 
-<div class="card slide-up">
-    <div class="card-body" style="text-align: center; padding: 2.5rem;">
-        <h3 style="color: #a8d5a2; margin-bottom: 1rem; font-size: 1.3rem;">How You Can Help</h3>
+<div class="card slide-up" id="ee-help-card">
+    <div class="card-body" style="text-align: center; padding: 2.5rem; position: relative;">
+        <h3 style="color: var(--color-primary); margin-bottom: 1rem; font-size: 1.3rem;">How You Can Help</h3>
         <p class="fact-text" style="font-size: 1rem; margin-bottom: 1.5rem;">
             Support organizations working to protect lemurs and their habitats in Madagascar.
         </p>
@@ -103,6 +103,56 @@
                 Madagascar Biodiversity Partnership
             </a>
         </div>
+        <!-- Easter Egg #7: Map pin drop target -->
+        <div id="ee-map-pin" style="display:none; position:absolute; top:-18px; left:50%; transform:translateX(-50%); text-align:center;">
+            <div style="font-size:2rem; animation: eePinDrop 0.6s cubic-bezier(0.22,1,0.36,1);">&#128205;</div>
+            <div id="ee-pin-tooltip" style="background:var(--card-bg); border:1px solid var(--color-tertiary-dim); border-radius:12px; padding:0.75rem 1rem; margin-top:0.5rem; width:280px; margin-left:-124px; font-size:0.85rem; color:var(--text-primary); line-height:1.5; opacity:0; transition:opacity 0.5s; cursor:pointer;">
+                You found Madagascar! Fun fact: Madagascar is the 4th largest island in the world, about the size of France.
+            </div>
+        </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_head %}
+<style>
+    @keyframes eePinDrop {
+        0% { transform: translateY(-60px); opacity: 0; }
+        60% { transform: translateY(5px); opacity: 1; }
+        80% { transform: translateY(-3px); }
+        100% { transform: translateY(0); }
+    }
+</style>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    /* Easter Egg #7: Scroll to Madagascar */
+    (function() {
+        var reachedBottom = false;
+        var triggered = false;
+        window.addEventListener('scroll', function() {
+            if (triggered) return;
+            var scrollPos = window.scrollY + window.innerHeight;
+            var docHeight = document.documentElement.scrollHeight;
+            if (scrollPos >= docHeight - 50) {
+                reachedBottom = true;
+            }
+            if (reachedBottom && scrollPos < docHeight - 250) {
+                triggered = true;
+                var pin = document.getElementById('ee-map-pin');
+                pin.style.display = 'block';
+                showToast('You scrolled back to Madagascar!');
+                setTimeout(function() {
+                    document.getElementById('ee-pin-tooltip').style.opacity = '1';
+                }, 700);
+                document.getElementById('ee-pin-tooltip').addEventListener('click', function() {
+                    pin.style.transition = 'opacity 0.4s';
+                    pin.style.opacity = '0';
+                    setTimeout(function() { pin.style.display = 'none'; }, 400);
+                });
+            }
+        });
+    })();
+</script>
 {% endblock %}

@@ -2,12 +2,57 @@
 {% block title %}Species Not Found{% endblock %}
 
 {% block content %}
-<div class="card">
+<div class="card" id="ee-404-card">
     <div class="card-body" style="text-align: center; padding: 3rem;">
-        <p style="font-size: 4rem; margin-bottom: 1rem;">&#129431;</p>
-        <h2 style="color: #f4d35e; margin-bottom: 1rem;">Species Not Found</h2>
-        <p class="fact-text">No facts found for "{{ species }}".</p>
-        <a href="./" class="btn">Back to Random Facts</a>
+        <p style="font-size: 4rem; margin-bottom: 1rem; cursor: pointer; user-select: none;" id="ee-404-emoji">&#129431;</p>
+        <h2 style="color: var(--color-accent); margin-bottom: 1rem;" id="ee-404-heading">Species Not Found</h2>
+        <p class="fact-text" id="ee-404-text">No facts found for "{{ species }}".</p>
+        <a href="./" class="btn" id="ee-404-btn">Back to Random Facts</a>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    /* Easter Egg #3: The Aye-Aye's Tap — click emoji 3x */
+    (function() {
+        var clicks = 0;
+        var triggered = false;
+        var emoji = document.getElementById('ee-404-emoji');
+        emoji.addEventListener('click', function() {
+            if (triggered) return;
+            clicks++;
+            if (clicks < 3) return;
+            triggered = true;
+
+            // Morphing sequence: pointing → ear → bug → lemur → aye-aye reveal
+            var sequence = [
+                { text: '\u{1F449}', delay: 0 },      // pointing finger (tapping)
+                { text: '\u{1F442}', delay: 1000 },    // ear (listening)
+                { text: '\u{1F41B}', delay: 2000 },    // bug (found the grub!)
+                { text: '\u{1F9AB}', delay: 3000 },    // lemur (aye-aye!)
+            ];
+
+            sequence.forEach(function(step) {
+                setTimeout(function() {
+                    emoji.textContent = step.text;
+                    emoji.style.transition = 'transform 0.3s';
+                    emoji.style.transform = 'scale(1.3)';
+                    setTimeout(function() { emoji.style.transform = 'scale(1)'; }, 200);
+                }, step.delay);
+            });
+
+            // After sequence, reveal aye-aye content
+            setTimeout(function() {
+                document.getElementById('ee-404-heading').textContent = 'The Aye-Aye Found Something!';
+                document.getElementById('ee-404-heading').style.color = 'var(--color-tertiary)';
+                document.getElementById('ee-404-text').innerHTML = 'The aye-aye\'s middle finger is 3x thinner than its other fingers and has a ball-and-socket joint, letting it rotate 360\u00b0 to extract grubs from tree bark. This technique is called <em>percussive foraging</em> \u2014 the only primate known to do it!';
+                var btn = document.getElementById('ee-404-btn');
+                btn.textContent = 'Meet the Aye-Aye';
+                btn.href = 'species/aye-aye/';
+                showToast('Tap tap tap... The aye-aye found something!');
+            }, 4000);
+        });
+    })();
+</script>
 {% endblock %}

@@ -11,12 +11,12 @@
 <div id="quiz-start" class="card slide-up">
     <div class="card-body" style="text-align: center; padding: 3rem 2rem;">
         <div style="font-size: 5rem; margin-bottom: 1rem;">&#129431;</div>
-        <h3 style="color: #a8d5a2; font-size: 1.5rem; margin-bottom: 1rem;">Ready to Test Your Lemur Knowledge?</h3>
+        <h3 style="color: var(--color-primary); font-size: 1.5rem; margin-bottom: 1rem;">Ready to Test Your Lemur Knowledge?</h3>
         <p class="fact-text" style="font-size: 1rem; margin-bottom: 2rem;">
             Answer 10 multiple-choice questions about lemurs, their habitats, and conservation.
         </p>
         <div style="margin-bottom: 1.5rem;">
-            <label style="display: block; margin-bottom: 0.75rem; color: rgba(232, 220, 200, 0.6); font-size: 0.9rem;">Choose difficulty:</label>
+            <label style="display: block; margin-bottom: 0.75rem; color: var(--text-muted); font-size: 0.9rem;">Choose difficulty:</label>
             <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
                 <button class="btn btn-secondary difficulty-btn active-diff" data-difficulty="all" onclick="setDifficulty('all', this)">All Levels</button>
                 <button class="btn btn-secondary difficulty-btn" data-difficulty="easy" onclick="setDifficulty('easy', this)">Easy</button>
@@ -34,19 +34,19 @@
 <div id="quiz-game" style="display: none;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
         <div style="display: flex; gap: 0.5rem;" id="progress-dots"></div>
-        <div style="color: rgba(232, 220, 200, 0.6); font-size: 0.9rem;">
-            Score: <span id="score" style="color: #f4d35e; font-weight: 700;">0</span>
+        <div style="color: var(--text-muted); font-size: 0.9rem;">
+            Score: <span id="score" style="color: var(--color-accent); font-weight: 700;">0</span>
         </div>
     </div>
     <div class="card" id="question-card">
         <div class="card-body" style="padding: 2rem;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                 <span class="category-tag cat-science" id="q-difficulty">Medium</span>
-                <span style="color: rgba(232, 220, 200, 0.5); font-size: 0.9rem;">
+                <span style="color: var(--text-faint); font-size: 0.9rem;">
                     Question <span id="q-number">1</span> of <span id="q-total">10</span>
                 </span>
             </div>
-            <h3 style="color: #e8dcc8; font-size: 1.25rem; line-height: 1.6; margin-bottom: 1.5rem;" id="q-text"></h3>
+            <h3 style="color: var(--text-primary); font-size: 1.25rem; line-height: 1.6; margin-bottom: 1.5rem;" id="q-text"></h3>
             <div id="answers" style="display: grid; gap: 0.75rem;"></div>
             <button class="btn" id="next-btn" onclick="nextQuestion()" style="display: none; margin-top: 1.5rem;">
                 Next Question
@@ -62,10 +62,10 @@
             <div style="font-size: 5rem; margin-bottom: 1rem;" id="result-emoji">&#129431;</div>
             <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem;" id="result-title"></h3>
             <p style="font-size: 3rem; font-weight: 800; margin-bottom: 0.5rem;">
-                <span id="final-score" style="color: #f4d35e;"></span>
-                <span style="color: rgba(232, 220, 200, 0.4); font-size: 1.5rem;">/ <span id="final-total"></span></span>
+                <span id="final-score" style="color: var(--color-accent);"></span>
+                <span style="color: var(--text-faint); font-size: 1.5rem;">/ <span id="final-total"></span></span>
             </p>
-            <p style="color: rgba(232, 220, 200, 0.6); margin-bottom: 2rem;" id="result-message"></p>
+            <p style="color: var(--text-muted); margin-bottom: 2rem;" id="result-message"></p>
             <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
                 <button class="btn btn-quiz" onclick="startQuiz()">Play Again</button>
                 <a href="./" class="btn btn-secondary">Explore Facts</a>
@@ -73,6 +73,27 @@
                     &#128279; Share Score
                 </button>
             </div>
+        </div>
+    </div>
+    <!-- Easter Egg #6: Secret dossier for perfect score -->
+    <div id="ee-dossier" class="card" style="display:none; border-style:dashed; border-color:var(--color-tertiary-dim); margin-top:1rem;">
+        <div class="card-body" style="padding:2rem;">
+            <h3 style="color:var(--color-tertiary); font-size:1.2rem; margin-bottom:1rem;">&#128373; SECRET: The Lemur Whisperer Protocol</h3>
+            <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1.25rem;">Clearance granted. Here are three ultra-classified lemur facts:</p>
+            <ul style="list-style:none; display:flex; flex-direction:column; gap:1rem;">
+                <li style="display:flex; gap:0.75rem; align-items:flex-start;">
+                    <span style="color:var(--color-accent);">&#9679;</span>
+                    <span style="color:var(--text-primary); line-height:1.6;">The silky sifaka has been called the "angel of the forest" by locals, and fewer than 250 remain in the wild.</span>
+                </li>
+                <li style="display:flex; gap:0.75rem; align-items:flex-start;">
+                    <span style="color:var(--color-accent);">&#9679;</span>
+                    <span style="color:var(--text-primary); line-height:1.6;">Female ring-tailed lemurs use "stink fights" with scent from their wrist glands to establish social dominance.</span>
+                </li>
+                <li style="display:flex; gap:0.75rem; align-items:flex-start;">
+                    <span style="color:var(--color-accent);">&#9679;</span>
+                    <span style="color:var(--text-primary); line-height:1.6;">The ancient giant sloth lemur (Archaeoindris) was the size of a male gorilla and went extinct only about 500 years ago.</span>
+                </li>
+            </ul>
         </div>
     </div>
 </div>
@@ -85,11 +106,11 @@
         display: block;
         width: 100%;
         text-align: left;
-        background: rgba(255, 255, 255, 0.06);
-        border: 2px solid rgba(255, 255, 255, 0.1);
-        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 2px solid var(--card-border);
+        border-radius: var(--radius-btn);
         padding: 1rem 1.25rem;
-        color: #e8dcc8;
+        color: var(--text-primary);
         font-size: 1rem;
         font-family: inherit;
         cursor: pointer;
@@ -98,21 +119,21 @@
     }
 
     .answer-btn:hover:not(.answered) {
-        background: rgba(255, 255, 255, 0.12);
-        border-color: rgba(244, 211, 94, 0.4);
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(232, 164, 74, 0.4);
         transform: translateX(4px);
     }
 
     .answer-btn.correct {
-        background: rgba(40, 167, 69, 0.2);
-        border-color: #71d88a;
-        color: #71d88a;
+        background: var(--badge-lc-bg);
+        border-color: var(--badge-lc-color);
+        color: var(--badge-lc-color);
     }
 
     .answer-btn.wrong {
-        background: rgba(220, 53, 69, 0.2);
-        border-color: #ff6b7a;
-        color: #ff6b7a;
+        background: var(--badge-cr-bg);
+        border-color: var(--badge-cr-color);
+        color: var(--badge-cr-color);
     }
 
     .answer-btn.answered {
@@ -128,18 +149,18 @@
         width: 12px;
         height: 12px;
         border-radius: 50%;
-        background: rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.12);
         transition: all 0.3s;
     }
 
-    .progress-dot.current { background: #f4d35e; transform: scale(1.2); }
-    .progress-dot.correct-dot { background: #71d88a; }
-    .progress-dot.wrong-dot { background: #ff6b7a; }
+    .progress-dot.current { background: var(--color-accent); transform: scale(1.2); }
+    .progress-dot.correct-dot { background: var(--badge-lc-color); }
+    .progress-dot.wrong-dot { background: var(--badge-cr-color); }
 
     .difficulty-btn.active-diff {
-        background: linear-gradient(135deg, rgba(244, 211, 94, 0.3), rgba(244, 211, 94, 0.15));
-        border-color: rgba(244, 211, 94, 0.5);
-        color: #f4d35e;
+        background: linear-gradient(135deg, rgba(232, 164, 74, 0.25), rgba(232, 164, 74, 0.1));
+        border-color: rgba(232, 164, 74, 0.5);
+        color: var(--color-accent);
     }
 
     .difficulty-btn { margin-top: 0; }
@@ -178,6 +199,7 @@
         currentQuestion = 0;
         score = 0;
         document.getElementById('score').textContent = '0';
+        document.getElementById('ee-dossier').style.display = 'none';
 
         // Filter by difficulty
         let filtered = selectedDifficulty === 'all'
@@ -334,8 +356,28 @@
 
         document.getElementById('result-emoji').innerHTML = emoji;
         document.getElementById('result-title').textContent = title;
-        document.getElementById('result-title').style.color = pct >= 60 ? '#a8d5a2' : '#f4d35e';
+        document.getElementById('result-title').style.color = pct >= 60 ? 'var(--color-primary)' : 'var(--color-accent)';
         document.getElementById('result-message').textContent = message;
+
+        /* Easter Egg #6: Lemur Whisperer — perfect score dossier */
+        if (pct === 100) {
+            setTimeout(function() {
+                var dossier = document.getElementById('ee-dossier');
+                dossier.style.display = 'block';
+                dossier.style.opacity = '0';
+                dossier.style.transition = 'opacity 0.6s ease';
+                requestAnimationFrame(function() { dossier.style.opacity = '1'; });
+                showToast('SECRET CLEARANCE GRANTED');
+                console.log('%c' + [
+                    '  ___  ',
+                    ' /o.o\\ ',
+                    '( > < )',
+                    ' \\___/ ',
+                    '  LEMUR WHISPERER',
+                    '  PROTOCOL ACTIVE',
+                ].join('\n'), 'color: #c77dba; font-size: 12px; font-family: monospace;');
+            }, 2000);
+        }
     }
 
     function shareResult() {

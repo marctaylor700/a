@@ -50,6 +50,8 @@
     let allFacts = [];
     let loading = false;
     let lastFactIndex = -1;
+    let factClickCount = 0;
+    let badgeShown = false;
 
     // Load all facts once on page load
     fetch('data/facts.json')
@@ -62,6 +64,13 @@
         loading = true;
         const btn = document.getElementById('new-fact-btn');
         btn.textContent = 'Loading...';
+
+        /* Easter Egg #4: Fact Collector Badge */
+        factClickCount++;
+        if (factClickCount >= 20 && !badgeShown) {
+            badgeShown = true;
+            setTimeout(showFactBadge, 400);
+        }
 
         let newIndex;
         do {
@@ -107,6 +116,38 @@
         }, 200);
     }
 
+    /* Easter Egg #4: Fact Collector Badge overlay */
+    function showFactBadge() {
+        var overlay = document.createElement('div');
+        overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(12,14,26,0.85);z-index:400;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.4s;cursor:pointer;backdrop-filter:blur(6px);';
+        overlay.innerHTML = '<div style="position:relative;text-align:center;max-width:420px;padding:2.5rem;background:rgba(255,255,255,0.06);border:1px solid rgba(232,164,74,0.3);border-radius:24px;">'
+            + '<div style="font-size:4rem;margin-bottom:0.5rem;">&#127942;</div>'
+            + '<h3 style="font-family:Space Grotesk,sans-serif;color:#e8a44a;font-size:1.4rem;margin-bottom:0.75rem;">Lemur Explorer Badge Earned!</h3>'
+            + '<p style="color:#e4e0f0;line-height:1.7;margin-bottom:1rem;">You\'ve discovered 20 facts in one session!</p>'
+            + '<p style="color:#c77dba;font-size:0.95rem;line-height:1.6;">Did you know? A group of lemurs is called a <strong>"conspiracy."</strong> You\'re now an honorary member.</p>'
+            + '<div id="ee-confetti" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:hidden;"></div>'
+            + '</div>';
+        overlay.onclick = function() {
+            overlay.style.opacity = '0';
+            setTimeout(function() { overlay.remove(); }, 400);
+        };
+        document.body.appendChild(overlay);
+        requestAnimationFrame(function() { overlay.style.opacity = '1'; });
+        // Floating lemur emoji confetti
+        var confetti = document.getElementById('ee-confetti');
+        for (var i = 0; i < 12; i++) {
+            var e = document.createElement('div');
+            e.textContent = '\u{1F9AB}';
+            e.style.cssText = 'position:absolute;font-size:' + (1.2 + Math.random()) + 'rem;bottom:-40px;left:' + (Math.random() * 90 + 5) + '%;animation:eeFloatUp ' + (2.5 + Math.random() * 2) + 's ease-out ' + (Math.random() * 1.5) + 's forwards;opacity:0;';
+            confetti.appendChild(e);
+        }
+        showToast('Achievement unlocked: Lemur Conspiracy Member');
+        setTimeout(function() {
+            overlay.style.opacity = '0';
+            setTimeout(function() { overlay.remove(); }, 400);
+        }, 8000);
+    }
+
     // Keyboard shortcut
     document.addEventListener('keydown', (e) => {
         if (e.code === 'Space' && !e.target.matches('input, textarea, button')) {
@@ -115,4 +156,11 @@
         }
     });
 </script>
+<style>
+    @keyframes eeFloatUp {
+        0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+        10% { opacity: 0.8; }
+        100% { transform: translateY(-500px) rotate(360deg); opacity: 0; }
+    }
+</style>
 {% endblock %}

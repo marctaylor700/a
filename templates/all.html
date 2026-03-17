@@ -10,7 +10,7 @@
 <div class="species-grid">
     {% for sp in species_list %}
     <a href="species/{{ slug_map[sp['common_name']] }}/" class="species-card slide-up" style="animation-delay: {{ [loop.index0 * 0.05, 0.4] | min }}s;">
-        <div style="position: relative; height: 180px; background: linear-gradient(135deg, #2a5a1e, #3d7a2e); overflow: hidden;">
+        <div style="position: relative; height: 180px; background: linear-gradient(135deg, var(--bg-accent), #252060); overflow: hidden;">
             <img src="images/{{ sp['image_filename'] }}" alt="{{ sp['common_name'] }}" class="species-card-img"
                  onerror="this.style.display='none';"
                  loading="lazy">
@@ -37,5 +37,56 @@
         </div>
     </a>
     {% endfor %}
+
+    <!-- Easter Egg #9: The Ghost Lemur — invisible 32nd species card -->
+    <div class="species-card ee-ghost-species" tabindex="0" id="ee-ghost-lemur" role="button" aria-label="Hidden extinct species">
+        <div style="position: relative; height: 180px; background: linear-gradient(135deg, #12102a, #1e1a3e); overflow: hidden; display: flex; align-items: center; justify-content: center;">
+            <span style="font-size: 4rem; opacity: 0.2; filter: grayscale(1);">?</span>
+            <div style="position: absolute; top: 0.75rem; right: 0.75rem;">
+                <span class="conservation-badge" style="background: rgba(128,100,160,0.25); color: #8878a8; border: 1px solid rgba(128,100,160,0.4);">EX</span>
+            </div>
+        </div>
+        <div class="species-card-body">
+            <div class="species-card-name" style="color: var(--text-muted);">Giant Sloth Lemur</div>
+            <div class="species-card-sci">Archaeoindris fontoynonti</div>
+            <div class="species-card-meta">
+                <span>Extinct</span>
+                <span>~200 kg</span>
+            </div>
+        </div>
+    </div>
 </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    /* Easter Egg #9: Ghost Lemur overlay */
+    (function() {
+        var ghost = document.getElementById('ee-ghost-lemur');
+        ghost.addEventListener('click', function(e) {
+            e.preventDefault();
+            var overlay = document.createElement('div');
+            overlay.className = 'ee-ghost-overlay';
+            overlay.innerHTML = '<div class="ee-ghost-overlay-content">'
+                + '<div style="font-size:3rem;margin-bottom:1rem;opacity:0.5;">&#128128;</div>'
+                + '<h3>Giant Sloth Lemur</h3>'
+                + '<p style="font-style:italic;color:var(--text-muted);font-size:0.9rem;margin-bottom:1rem;">Archaeoindris fontoynonti</p>'
+                + '<p>The Giant Sloth Lemur was the largest lemur that ever lived, weighing up to 200 kg \u2014 as heavy as a male gorilla. It went extinct approximately 500 years ago, likely due to human hunting after people arrived on Madagascar around 2,000 years ago.</p>'
+                + '<p style="color:var(--color-tertiary);font-size:0.9rem;">Its discovery reminds us what we stand to lose.</p>'
+                + '<button class="btn btn-secondary" style="margin-top:1.5rem;" onclick="this.closest(\'.ee-ghost-overlay\').remove()">Close</button>'
+                + '</div>';
+            overlay.addEventListener('click', function(ev) {
+                if (ev.target === overlay) overlay.remove();
+            });
+            document.body.appendChild(overlay);
+            requestAnimationFrame(function() { overlay.classList.add('visible'); });
+        });
+        ghost.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                ghost.click();
+            }
+        });
+    })();
+</script>
 {% endblock %}
