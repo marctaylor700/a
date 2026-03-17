@@ -17,36 +17,44 @@ def get_db():
 
 @app.route("/")
 def index():
-    conn = get_db()
-    fact_row = conn.execute(
-        "SELECT * FROM lemur_facts ORDER BY RANDOM() LIMIT 1"
-    ).fetchone()
-    total_facts = conn.execute("SELECT COUNT(*) FROM lemur_facts").fetchone()[0]
-    total_species = conn.execute(
-        "SELECT COUNT(*) FROM lemur_species"
-    ).fetchone()[0]
-    conn.close()
-    return render_template(
-        "index.html", fact=fact_row, total_facts=total_facts, total_species=total_species
-    )
+    try:
+        conn = get_db()
+        fact_row = conn.execute(
+            "SELECT * FROM lemur_facts ORDER BY RANDOM() LIMIT 1"
+        ).fetchone()
+        total_facts = conn.execute("SELECT COUNT(*) FROM lemur_facts").fetchone()[0]
+        total_species = conn.execute(
+            "SELECT COUNT(*) FROM lemur_species"
+        ).fetchone()[0]
+        conn.close()
+        return render_template(
+            "index.html", fact=fact_row, total_facts=total_facts, total_species=total_species
+        )
+    except Exception as e:
+        app.logger.error(f"Error in index route: {e}")
+        return render_template("404.html", species="Error"), 500
 
 
 @app.route("/api/random")
 def api_random_fact():
-    conn = get_db()
-    fact_row = conn.execute(
-        "SELECT * FROM lemur_facts ORDER BY RANDOM() LIMIT 1"
-    ).fetchone()
-    conn.close()
-    return jsonify(
-        {
-            "id": fact_row["id"],
-            "species": fact_row["species"],
-            "fact": fact_row["fact"],
-            "image": fact_row["image_filename"],
-            "category": fact_row["category"],
-        }
-    )
+    try:
+        conn = get_db()
+        fact_row = conn.execute(
+            "SELECT * FROM lemur_facts ORDER BY RANDOM() LIMIT 1"
+        ).fetchone()
+        conn.close()
+        return jsonify(
+            {
+                "id": fact_row["id"],
+                "species": fact_row["species"],
+                "fact": fact_row["fact"],
+                "image": fact_row["image_filename"],
+                "category": fact_row["category"],
+            }
+        )
+    except Exception as e:
+        app.logger.error(f"Error in api_random_fact: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @app.route("/species/<species_name>")
@@ -148,20 +156,76 @@ def api_quiz():
 
 @app.route("/api/species")
 def api_species():
-    conn = get_db()
-    species_list = conn.execute("SELECT * FROM lemur_species ORDER BY common_name").fetchall()
-    conn.close()
-    return jsonify(
-        [
-            {
-                "common_name": s["common_name"],
-                "scientific_name": s["scientific_name"],
-                "conservation_status": s["conservation_status"],
-                "image": s["image_filename"],
-            }
-            for s in species_list
-        ]
-    )
+    try:
+        conn = get_db()
+        species_list = conn.execute("SELECT * FROM lemur_species ORDER BY common_name").fetchall()
+        conn.close()
+        return jsonify(
+            [
+                {
+                    "common_name": s["common_name"],
+                    "scientific_name": s["scientific_name"],
+                    "conservation_status": s["conservation_status"],
+                    "image": s["image_filename"],
+                }
+                for s in species_list
+            ]
+        )
+    except Exception as e:
+        app.logger.error(f"Error in api_species: {e}")
+        return jsonify({"error": "Internal server error"}), 500
+
+@app.route("/api/search")
+def api_search():
+    try:
+        query = request.args.get("q", "").strip()
+        if not query:
+            return jsonify([])
+        
+        conn = get_db()
+        # Search in both species and facts
+        species_results = conn.execute(
+            "SELECT common_name, scientific_name, conservation_status, image_filename, description "
+            "FROM lemur_species "
+            "WHERE common_name LIKE ? OR scientific_name LIKE ? OR description LIKE ? "
+            "ORDER BY common_name",
+            (f"%{query}%", f"%{query}%", f"%{query}%")
+        ).fetchall()
+        
+        fact_results = conn.execute(
+            "SELECT species, fact, image_filename, category "
+            "FROM lemur_facts "
+            "WHERE species LIKE ? OR fact LIKE ? "
+            "ORDER BY species",
+            (f"%{query}%", f"%{query}%")
+        ).fetchall()
+        
+        conn.close()
+        
+        results = []
+        for row in species_results:
+            results.append({
+                "type": "species",
+                "common_name": row["common_name"],
+                "scientific_name": row["scientific_name"],
+                "conservation_status": row["conservation_status"],
+                "image": row["image_filename"],
+                "description": row["description"][:200] + "..." if len(row["description"]) > 200 else row["description"]
+            })
+        
+        for row in fact_results:
+            results.append({
+                "type": "fact",
+                "species": row["species"],
+                "fact": row["fact"],
+                "image": row["image_filename"],
+                "category": row["category"]
+            })
+        
+        return jsonify(results)
+    except Exception as e:
+        app.logger.error(f"Error in api_search: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 # Initialize the database on startup
@@ -170,4 +234,6 @@ with app.app_context():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    import sys
+    port = int(sys.argv[1]) if len(sys.argv) > 1 else 5000
+    app.run(debug=True, host="0.0.0.0", port=port)

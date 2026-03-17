@@ -443,6 +443,22 @@
             backdrop-filter: blur(8px);
         }
 
+        /* Search results styling */
+        #search-results::-webkit-scrollbar {
+            width: 8px;
+        }
+        #search-results::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.3);
+            border-radius: 4px;
+        }
+        #search-results::-webkit-scrollbar-thumb {
+            background: rgba(244, 211, 94, 0.5);
+            border-radius: 4px;
+        }
+        #search-results::-webkit-scrollbar-thumb:hover {
+            background: rgba(244, 211, 94, 0.7);
+        }
+
         .copied-toast.show {
             transform: translateX(-50%) translateY(0);
         }
@@ -478,6 +494,15 @@
             <a href="conservation.html" {% if active_page == 'conservation' %}class="active"{% endif %}>Conservation</a>
             <a href="quiz.html" {% if active_page == 'quiz' %}class="active"{% endif %}>Quiz</a>
         </nav>
+        <div style="position: relative; margin-left: 1rem;">
+            <input type="text" id="search-input" placeholder="Search lemurs..." 
+                   style="padding: 0.5rem 1rem; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); 
+                          background: rgba(255,255,255,0.1); color: #e8dcc8; width: 200px;"
+                   onkeyup="handleSearch(event)">
+            <div id="search-results" style="position: absolute; top: 100%; left: 0; right: 0; 
+                                         background: rgba(0,0,0,0.9); border-radius: 10px; margin-top: 0.5rem; 
+                                         max-height: 400px; overflow-y: auto; display: none; z-index: 1000;"></div>
+        </div>
     </header>
     <main>
         {% block content %}{% endblock %}
@@ -503,6 +528,86 @@
                 navigator.clipboard.writeText(shareText).then(() => showToast());
             }
         }
+
+        // Search functionality
+        let searchTimeout = null;
+        function handleSearch(event) {
+            const query = event.target.value.trim();
+            const resultsDiv = document.getElementById('search-results');
+            
+            if (query.length < 2) {
+                resultsDiv.style.display = 'none';
+                return;
+            }
+            
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                fetch(`/api/search?q=${encodeURIComponent(query)}`)
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.length === 0) {
+                            resultsDiv.style.display = 'none';
+                            return;
+                        }
+                        
+                        resultsDiv.innerHTML = '';
+                        data.forEach(item => {
+                            const div = document.createElement('div');
+                            div.style.padding = '0.75rem 1rem';
+                            div.style.borderBottom = '1px solid rgba(255,255,255,0.1)';
+                            div.style.cursor = 'pointer';
+                            
+                            if (item.type === 'species') {
+                                div.innerHTML = `
+                                    <div style="display: flex; gap: 0.75rem; align-items: center;">
+                                        <img src="images/${item.image}" alt="${item.common_name}" 
+                                             style="width: 40px; height: 40px; border-radius: 6px; object-fit: cover;"
+                                             onerror="this.style.display='none'">
+                                        <div>
+                                            <div style="color: #a8d5a2; font-weight: 700;">${item.common_name}</div>
+                                            <div style="color: rgba(232, 220, 200, 0.5); font-style: italic; font-size: 0.8rem;">${item.scientific_name}</div>
+                                            <div style="color: rgba(232, 220, 200, 0.6); font-size: 0.8rem; margin-top: 0.25rem;">${item.description}</div>
+                                        </div>
+                                    </div>
+                                `;
+                                div.onclick = () => window.location.href = `species/${item.common_name.toLowerCase().replace(/\s+/g, '-')}/`;
+                            } else {
+                                div.innerHTML = `
+                                    <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
+                                        <img src="images/${item.image}" alt="${item.species}" 
+                                             style="width: 40px; height: 40px; border-radius: 6px; object-fit: cover;"
+                                             onerror="this.style.display='none'">
+                                        <div>
+                                            <div style="color: #a8d5a2; font-weight: 700;">${item.species}</div>
+                                            <div style="color: #e8dcc8; font-size: 0.85rem; margin-top: 0.25rem;">${item.fact}</div>
+                                            {% if item.category %}
+                                            <span class="category-tag cat-${item.category}" style="margin-top: 0.25rem; font-size: 0.7rem;">${item.category}</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                `;
+                                div.onclick = () => window.location.href = `species/${item.species.toLowerCase().replace(/\s+/g, '-')}/`;
+                            }
+                            
+                            div.onmouseenter = () => div.style.background = 'rgba(255,255,255,0.05)';
+                            div.onmouseleave = () => div.style.background = 'transparent';
+                            resultsDiv.appendChild(div);
+                        });
+                        
+                        resultsDiv.style.display = 'block';
+                    })
+                    .catch(() => resultsDiv.style.display = 'none');
+            }, 300);
+        }
+        
+        // Close search when clicking outside
+        document.addEventListener('click', (e) => {
+            const searchInput = document.getElementById('search-input');
+            const searchResults = document.getElementById('search-results');
+            if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                searchResults.style.display = 'none';
+            }
+        });
     </script>
     {% block extra_scripts %}{% endblock %}
 </body>
