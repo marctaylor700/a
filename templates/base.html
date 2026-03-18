@@ -159,8 +159,9 @@
 
         .card img {
             width: 100%;
-            height: 420px;
+            max-height: 420px;
             object-fit: cover;
+            object-position: center 25%;
             display: block;
         }
 
@@ -289,8 +290,9 @@
 
         .species-card-img {
             width: 100%;
-            height: 180px;
+            height: 200px;
             object-fit: cover;
+            object-position: center 30%;
             display: block;
         }
 
@@ -323,7 +325,8 @@
 
         .placeholder-img {
             width: 100%;
-            height: 420px;
+            max-height: 420px;
+            aspect-ratio: 16 / 9;
             background: linear-gradient(135deg, var(--bg-accent) 0%, #252060 100%);
             position: relative;
             overflow: hidden;
@@ -333,6 +336,7 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+            object-position: center 25%;
             display: block;
         }
 
@@ -703,7 +707,7 @@
             header { padding: 1rem; }
             header h1 { font-size: 1.4rem; }
             nav a { font-size: 0.8rem; padding: 0.4rem 0.7rem; }
-            .card img, .placeholder-img { height: 250px; }
+            .card img, .placeholder-img { max-height: 250px; }
             .fact-text { font-size: 1.05rem; }
             main { padding: 0 1rem; margin: 1rem auto; }
             .species-grid { grid-template-columns: 1fr; }
