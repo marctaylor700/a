@@ -214,6 +214,16 @@ def build_site():
         fp.write(html)
     print("  Rendered quiz.html")
 
+    # 4b. Game page
+    tmpl = env.get_template("game.html")
+    html = tmpl.render(
+        **base_ctx,
+        active_page="game",
+    )
+    with open(os.path.join(OUTPUT_DIR, "game.html"), "w") as fp:
+        fp.write(html)
+    print("  Rendered game.html")
+
     # 5. Individual species pages
     species_dir = os.path.join(OUTPUT_DIR, "species")
     os.makedirs(species_dir, exist_ok=True)
