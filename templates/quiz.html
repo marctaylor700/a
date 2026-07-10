@@ -3,29 +3,30 @@
 
 {% block content %}
 <div class="page-header fade-in">
-    <h2>Lemur Quiz</h2>
-    <p>Test your knowledge about Madagascar's amazing primates!</p>
+    <div class="page-eyebrow">Examination &middot; 10 questions</div>
+    <h2>The field exam</h2>
+    <p>Ten questions on lemurs, their habitats, and their conservation. Each tail ring below is one question.</p>
 </div>
 
 <!-- Start Screen -->
 <div id="quiz-start" class="card slide-up">
     <div class="card-body" style="text-align: center; padding: 3rem 2rem;">
-        <div style="font-size: 5rem; margin-bottom: 1rem;">&#129431;</div>
-        <h3 style="color: var(--color-primary); font-size: 1.5rem; margin-bottom: 1rem;">Ready to Test Your Lemur Knowledge?</h3>
-        <p class="fact-text" style="font-size: 1rem; margin-bottom: 2rem;">
+        <div class="eyeshine" aria-hidden="true"><i></i><i></i></div>
+        <h3 style="font-family: var(--font-display); font-weight: 600; font-size: 1.5rem; margin-bottom: 1rem;">Ready for the field exam?</h3>
+        <p style="color: var(--moon-dim); margin-bottom: 2rem;">
             Answer 10 multiple-choice questions about lemurs, their habitats, and conservation.
         </p>
         <div style="margin-bottom: 1.5rem;">
-            <label style="display: block; margin-bottom: 0.75rem; color: var(--text-muted); font-size: 0.9rem;">Choose difficulty:</label>
+            <label style="display: block; margin-bottom: 0.75rem; color: var(--moon-faint); font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.14em;">Choose difficulty</label>
             <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
-                <button class="btn btn-secondary difficulty-btn active-diff" data-difficulty="all" onclick="setDifficulty('all', this)">All Levels</button>
+                <button class="btn btn-secondary difficulty-btn active-diff" data-difficulty="all" onclick="setDifficulty('all', this)">All levels</button>
                 <button class="btn btn-secondary difficulty-btn" data-difficulty="easy" onclick="setDifficulty('easy', this)">Easy</button>
                 <button class="btn btn-secondary difficulty-btn" data-difficulty="medium" onclick="setDifficulty('medium', this)">Medium</button>
                 <button class="btn btn-secondary difficulty-btn" data-difficulty="hard" onclick="setDifficulty('hard', this)">Hard</button>
             </div>
         </div>
-        <button class="btn btn-quiz" onclick="startQuiz()" style="font-size: 1.15rem; padding: 1rem 2.5rem;">
-            Start Quiz!
+        <button class="btn" onclick="startQuiz()" style="font-size: 1.05rem; padding: 0.9rem 2.25rem;">
+            Start the exam
         </button>
     </div>
 </div>
@@ -34,22 +35,22 @@
 <div id="quiz-game" style="display: none;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
         <div style="display: flex; gap: 0.5rem;" id="progress-dots"></div>
-        <div style="color: var(--text-muted); font-size: 0.9rem;">
-            Score: <span id="score" style="color: var(--color-accent); font-weight: 700;">0</span>
+        <div style="font-family: var(--font-mono); color: var(--moon-faint); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em;">
+            Score <span id="score" style="color: var(--eyeshine); font-weight: 600;">0</span>
         </div>
     </div>
     <div class="card" id="question-card">
         <div class="card-body" style="padding: 2rem;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                <span class="category-tag cat-science" id="q-difficulty">Medium</span>
-                <span style="color: var(--text-faint); font-size: 0.9rem;">
+                <span class="category-tag" id="q-difficulty">Medium</span>
+                <span style="font-family: var(--font-mono); color: var(--moon-faint); font-size: 0.75rem;">
                     Question <span id="q-number">1</span> of <span id="q-total">10</span>
                 </span>
             </div>
-            <h3 style="color: var(--text-primary); font-size: 1.25rem; line-height: 1.6; margin-bottom: 1.5rem;" id="q-text"></h3>
+            <h3 style="font-family: var(--font-display); font-weight: 600; font-size: 1.35rem; line-height: 1.5; margin-bottom: 1.5rem;" id="q-text"></h3>
             <div id="answers" style="display: grid; gap: 0.75rem;"></div>
             <button class="btn" id="next-btn" onclick="nextQuestion()" style="display: none; margin-top: 1.5rem;">
-                Next Question
+                Next question
             </button>
         </div>
     </div>
@@ -59,41 +60,20 @@
 <div id="quiz-results" style="display: none;">
     <div class="card slide-up">
         <div class="card-body" style="text-align: center; padding: 3rem 2rem;">
-            <div style="font-size: 5rem; margin-bottom: 1rem;" id="result-emoji">&#129431;</div>
-            <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem;" id="result-title"></h3>
-            <p style="font-size: 3rem; font-weight: 800; margin-bottom: 0.5rem;">
-                <span id="final-score" style="color: var(--color-accent);"></span>
-                <span style="color: var(--text-faint); font-size: 1.5rem;">/ <span id="final-total"></span></span>
+            <div style="font-size: 4rem; margin-bottom: 1rem;" id="result-emoji">&#127942;</div>
+            <h3 style="font-family: var(--font-display); font-weight: 600; font-size: 1.5rem; margin-bottom: 0.5rem;" id="result-title"></h3>
+            <p style="font-family: var(--font-mono); font-size: 3rem; font-weight: 600; margin-bottom: 0.5rem;">
+                <span id="final-score" style="color: var(--eyeshine);"></span>
+                <span style="color: var(--moon-faint); font-size: 1.5rem;">/ <span id="final-total"></span></span>
             </p>
-            <p style="color: var(--text-muted); margin-bottom: 2rem;" id="result-message"></p>
+            <p style="color: var(--moon-dim); margin-bottom: 2rem;" id="result-message"></p>
             <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
-                <button class="btn btn-quiz" onclick="startQuiz()">Play Again</button>
-                <a href="./" class="btn btn-secondary">Explore Facts</a>
-                <button class="share-btn" onclick="shareResult()" style="margin-top: 0;">
-                    &#128279; Share Score
+                <button class="btn" onclick="startQuiz()">Retake the exam</button>
+                <a href="./" class="btn btn-secondary">Back to field notes</a>
+                <button class="share-btn" onclick="shareResult()">
+                    &#128279; Share score
                 </button>
             </div>
-        </div>
-    </div>
-    <!-- Easter Egg #6: Secret dossier for perfect score -->
-    <div id="ee-dossier" class="card" style="display:none; border-style:dashed; border-color:var(--color-tertiary-dim); margin-top:1rem;">
-        <div class="card-body" style="padding:2rem;">
-            <h3 style="color:var(--color-tertiary); font-size:1.2rem; margin-bottom:1rem;">&#128373; SECRET: The Lemur Whisperer Protocol</h3>
-            <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1.25rem;">Clearance granted. Here are three ultra-classified lemur facts:</p>
-            <ul style="list-style:none; display:flex; flex-direction:column; gap:1rem;">
-                <li style="display:flex; gap:0.75rem; align-items:flex-start;">
-                    <span style="color:var(--color-accent);">&#9679;</span>
-                    <span style="color:var(--text-primary); line-height:1.6;">The silky sifaka has been called the "angel of the forest" by locals, and fewer than 250 remain in the wild.</span>
-                </li>
-                <li style="display:flex; gap:0.75rem; align-items:flex-start;">
-                    <span style="color:var(--color-accent);">&#9679;</span>
-                    <span style="color:var(--text-primary); line-height:1.6;">Female ring-tailed lemurs use "stink fights" with scent from their wrist glands to establish social dominance.</span>
-                </li>
-                <li style="display:flex; gap:0.75rem; align-items:flex-start;">
-                    <span style="color:var(--color-accent);">&#9679;</span>
-                    <span style="color:var(--text-primary); line-height:1.6;">The ancient giant sloth lemur (Archaeoindris) was the size of a male gorilla and went extinct only about 500 years ago.</span>
-                </li>
-            </ul>
         </div>
     </div>
 </div>
@@ -106,64 +86,61 @@
         display: block;
         width: 100%;
         text-align: left;
-        background: rgba(255, 255, 255, 0.04);
-        border: 2px solid var(--card-border);
-        border-radius: var(--radius-btn);
-        padding: 1rem 1.25rem;
-        color: var(--text-primary);
+        background: var(--night);
+        border: 1px solid var(--line);
+        border-radius: 4px;
+        padding: 0.95rem 1.2rem;
+        color: var(--moon);
         font-size: 1rem;
-        font-family: inherit;
+        font-family: var(--font-body);
         cursor: pointer;
-        transition: all 0.2s;
-        font-weight: 600;
+        transition: border-color 0.2s, background 0.2s;
+        font-weight: 500;
     }
 
     .answer-btn:hover:not(.answered) {
-        background: rgba(255, 255, 255, 0.08);
-        border-color: rgba(232, 164, 74, 0.4);
-        transform: translateX(4px);
+        border-color: var(--eyeshine);
+        background: var(--dusk-2);
     }
 
     .answer-btn.correct {
-        background: var(--badge-lc-bg);
-        border-color: var(--badge-lc-color);
-        color: var(--badge-lc-color);
+        background: rgba(157, 184, 120, 0.14);
+        border-color: var(--status-lc);
+        color: var(--status-lc);
     }
 
     .answer-btn.wrong {
-        background: var(--badge-cr-bg);
-        border-color: var(--badge-cr-color);
-        color: var(--badge-cr-color);
+        background: rgba(224, 90, 61, 0.14);
+        border-color: var(--status-cr);
+        color: var(--status-cr);
     }
 
     .answer-btn.answered {
         cursor: default;
-        opacity: 0.7;
+        opacity: 0.65;
     }
 
-    .answer-btn.answered.correct {
-        opacity: 1;
-    }
+    .answer-btn.answered.correct { opacity: 1; }
 
+    /* Quiz progress: tail rings — hollow until answered */
     .progress-dot {
-        width: 12px;
-        height: 12px;
+        width: 14px;
+        height: 14px;
         border-radius: 50%;
-        background: rgba(255, 255, 255, 0.12);
+        border: 3px solid var(--moon-faint);
+        background: transparent;
         transition: all 0.3s;
     }
 
-    .progress-dot.current { background: var(--color-accent); transform: scale(1.2); }
-    .progress-dot.correct-dot { background: var(--badge-lc-color); }
-    .progress-dot.wrong-dot { background: var(--badge-cr-color); }
+    .progress-dot.current { border-color: var(--eyeshine); transform: scale(1.2); }
+    .progress-dot.correct-dot { border-color: var(--moon); background: var(--moon); }
+    .progress-dot.wrong-dot { border-color: var(--laterite); background: var(--laterite); }
 
     .difficulty-btn.active-diff {
-        background: linear-gradient(135deg, rgba(232, 164, 74, 0.25), rgba(232, 164, 74, 0.1));
-        border-color: rgba(232, 164, 74, 0.5);
-        color: var(--color-accent);
+        border-color: var(--eyeshine);
+        color: var(--eyeshine);
+        background: transparent;
     }
-
-    .difficulty-btn { margin-top: 0; }
 </style>
 {% endblock %}
 
@@ -199,7 +176,6 @@
         currentQuestion = 0;
         score = 0;
         document.getElementById('score').textContent = '0';
-        document.getElementById('ee-dossier').style.display = 'none';
 
         // Filter by difficulty
         let filtered = selectedDifficulty === 'all'
@@ -207,7 +183,7 @@
             : allQuestions.filter(q => q.difficulty === selectedDifficulty);
 
         if (filtered.length === 0) {
-            showToast('No questions available for this difficulty. Try "All Levels".');
+            showToast('No questions available for this difficulty. Try "All levels".');
             return;
         }
 
@@ -252,10 +228,6 @@
 
         const diffTag = document.getElementById('q-difficulty');
         diffTag.textContent = q.difficulty;
-        diffTag.className = 'category-tag';
-        if (q.difficulty === 'easy') diffTag.classList.add('cat-ecology');
-        else if (q.difficulty === 'medium') diffTag.classList.add('cat-behavior');
-        else diffTag.classList.add('cat-conservation');
 
         const answersDiv = document.getElementById('answers');
         answersDiv.innerHTML = '';
@@ -305,9 +277,9 @@
 
         const nextBtn = document.getElementById('next-btn');
         if (currentQuestion < quizData.length - 1) {
-            nextBtn.textContent = 'Next Question';
+            nextBtn.textContent = 'Next question';
         } else {
-            nextBtn.textContent = 'See Results';
+            nextBtn.textContent = 'See results';
         }
         nextBtn.style.display = 'inline-block';
     }
@@ -334,56 +306,35 @@
         let emoji, title, message;
         if (pct === 100) {
             emoji = '&#127942;';
-            title = 'Perfect Score!';
-            message = "You're a true lemur expert! Consider a career in primatology!";
+            title = 'Perfect score!';
+            message = "You're a true lemur expert. Consider a career in primatology.";
         } else if (pct >= 80) {
             emoji = '&#11088;';
-            title = 'Amazing!';
-            message = "You really know your lemurs! Just a few more facts to learn.";
+            title = 'Excellent fieldwork';
+            message = "You really know your lemurs. Just a few more facts to learn.";
         } else if (pct >= 60) {
-            emoji = '&#129431;';
-            title = 'Great Job!';
-            message = "Solid knowledge! Explore more facts to become an expert.";
+            emoji = '&#127769;';
+            title = 'Solid fieldwork';
+            message = "Good knowledge. Explore more field notes to become an expert.";
         } else if (pct >= 40) {
             emoji = '&#128522;';
-            title = 'Not Bad!';
-            message = "You know some lemur basics. Check out the species pages to learn more!";
+            title = 'Getting there';
+            message = "You know the basics. Check out the species pages to learn more.";
         } else {
             emoji = '&#128064;';
-            title = 'Keep Learning!';
-            message = "Lemurs are fascinating - explore the facts section and try again!";
+            title = 'Keep reading the notebook';
+            message = "Lemurs are fascinating — explore the field notes and try again.";
         }
 
         document.getElementById('result-emoji').innerHTML = emoji;
         document.getElementById('result-title').textContent = title;
-        document.getElementById('result-title').style.color = pct >= 60 ? 'var(--color-primary)' : 'var(--color-accent)';
         document.getElementById('result-message').textContent = message;
-
-        /* Easter Egg #6: Lemur Whisperer — perfect score dossier */
-        if (pct === 100) {
-            setTimeout(function() {
-                var dossier = document.getElementById('ee-dossier');
-                dossier.style.display = 'block';
-                dossier.style.opacity = '0';
-                dossier.style.transition = 'opacity 0.6s ease';
-                requestAnimationFrame(function() { dossier.style.opacity = '1'; });
-                showToast('SECRET CLEARANCE GRANTED');
-                console.log('%c' + [
-                    '  ___  ',
-                    ' /o.o\\ ',
-                    '( > < )',
-                    ' \\___/ ',
-                    '  LEMUR WHISPERER',
-                    '  PROTOCOL ACTIVE',
-                ].join('\n'), 'color: #c77dba; font-size: 12px; font-family: monospace;');
-            }, 2000);
-        }
     }
 
     function shareResult() {
         const total = quizData.length;
         const pct = Math.round((score / total) * 100);
-        const text = `I scored ${score}/${total} (${pct}%) on the Lemur Quiz! \u{1F9AB} Test your knowledge too!`;
+        const text = `I scored ${score}/${total} (${pct}%) on the Lemur Facts field exam! \u{1F9AB} Test your knowledge too!`;
         shareFact(text);
     }
 </script>

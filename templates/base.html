@@ -7,102 +7,102 @@
     <base href="{{ base_url }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Besley:ital,wght@0,400;0,600;0,800;1,400;1,600&family=Archivo:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg-darkest: #0c0e1a;
-            --bg-mid: #151832;
-            --bg-accent: #1a1040;
-            --bg-deep: #0f0e22;
-            --color-primary: #7b8cde;
-            --color-primary-dim: rgba(123, 140, 222, 0.15);
-            --color-accent: #e8a44a;
-            --color-accent-dim: rgba(232, 164, 74, 0.15);
-            --color-tertiary: #c77dba;
-            --color-tertiary-dim: rgba(199, 125, 186, 0.15);
-            --text-primary: #e4e0f0;
-            --text-muted: #a09cb8;
-            --text-faint: rgba(160, 156, 184, 0.5);
-            --card-bg: rgba(255, 255, 255, 0.05);
-            --card-border: rgba(123, 140, 222, 0.12);
-            --card-hover-glow: rgba(232, 164, 74, 0.08);
-            --btn-primary-from: #5a4dbf;
-            --btn-primary-to: #7b6cd4;
-            --btn-quiz-from: #d4943a;
-            --btn-quiz-to: #b87e2a;
-            --badge-cr-bg: rgba(230, 60, 80, 0.2);
-            --badge-cr-color: #f06878;
-            --badge-cr-border: rgba(230, 60, 80, 0.4);
-            --badge-en-bg: rgba(240, 150, 50, 0.2);
-            --badge-en-color: #f0a848;
-            --badge-en-border: rgba(240, 150, 50, 0.4);
-            --badge-vu-bg: rgba(230, 200, 60, 0.2);
-            --badge-vu-color: #e0c850;
-            --badge-vu-border: rgba(230, 200, 60, 0.4);
-            --badge-lc-bg: rgba(80, 190, 130, 0.2);
-            --badge-lc-color: #60d8a0;
-            --badge-lc-border: rgba(80, 190, 130, 0.4);
-            --radius-card: 20px;
-            --radius-hero: 24px;
-            --radius-btn: 12px;
-            --radius-badge: 20px;
-            --radius-tag: 8px;
-        }
-
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
+        :root {
+            --night: #241c33;
+            --night-deep: #1c1628;
+            --dusk: #2f2545;
+            --dusk-2: #3a2e55;
+            --ink: #14101d;
+            --laterite: #c2492a;
+            --laterite-deep: #9e3820;
+            --eyeshine: #efa83b;
+            --moon: #f0e7d8;
+            --moon-dim: rgba(240, 231, 216, 0.64);
+            --moon-faint: rgba(240, 231, 216, 0.4);
+            --line: rgba(240, 231, 216, 0.14);
+            --leaf: #9db878;
+            --status-cr: #e05a3d;
+            --status-en: #e08a3c;
+            --status-vu: #e3b84e;
+            --status-lc: #9db878;
+            --font-display: 'Besley', Georgia, serif;
+            --font-body: 'Archivo', 'Helvetica Neue', sans-serif;
+            --font-mono: 'Spline Sans Mono', 'Courier New', monospace;
+        }
+
+        html { background: #1c1628; }
+
         body {
-            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, var(--bg-darkest) 0%, var(--bg-mid) 30%, var(--bg-accent) 60%, var(--bg-deep) 100%);
-            background-attachment: fixed;
+            font-family: var(--font-body);
+            background:
+                radial-gradient(120% 55% at 50% -12%, rgba(194, 73, 42, 0.16), transparent 62%),
+                var(--night);
             min-height: 100vh;
-            color: var(--text-primary);
-            position: relative;
+            color: var(--moon);
+            font-size: 1.0625rem;
+            line-height: 1.7;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* Grain texture overlay */
-        body::after {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0.03;
-            pointer-events: none;
-            z-index: 0;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-            background-repeat: repeat;
-            background-size: 256px 256px;
+        ::selection { background: var(--laterite); color: var(--moon); }
+
+        a { color: var(--eyeshine); }
+
+        :focus-visible {
+            outline: 2px solid var(--eyeshine);
+            outline-offset: 2px;
+            border-radius: 2px;
         }
 
-        body > * { position: relative; z-index: 1; }
+        /* ---------- Signature: the ring-tail stripe ---------- */
+        .tail-stripe {
+            height: 8px;
+            background: repeating-linear-gradient(
+                90deg,
+                var(--ink) 0 18px,
+                var(--moon) 18px 36px
+            );
+        }
 
+        /* ---------- Masthead ---------- */
         header {
-            background: rgba(12, 14, 26, 0.7);
-            padding: 1rem 2rem;
+            background: var(--night-deep);
+            padding: 1.1rem 2rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border-bottom: 1px solid var(--card-border);
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            gap: 1rem 1.5rem;
+            flex-wrap: wrap;
         }
 
-        header h1 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.8rem;
-            color: var(--color-primary);
-            letter-spacing: 1px;
-            font-weight: 700;
-            cursor: default;
-            user-select: none;
+        .masthead {
+            text-decoration: none;
+            display: block;
         }
 
-        header h1 span { color: var(--color-accent); }
+        .masthead .masthead-eyebrow {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--eyeshine);
+            display: block;
+            margin-bottom: 0.1rem;
+        }
+
+        .masthead h1 {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 1.6rem;
+            line-height: 1.1;
+            color: var(--moon);
+            letter-spacing: 0.01em;
+        }
 
         nav {
             display: flex;
@@ -112,641 +112,634 @@
         }
 
         nav a {
-            color: var(--text-muted);
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--moon-dim);
             text-decoration: none;
-            font-size: 0.9rem;
-            transition: all 0.2s;
-            padding: 0.5rem 1rem;
-            border-radius: var(--radius-tag);
-            font-weight: 600;
+            padding: 0.5rem 0.85rem;
+            border-bottom: 2px solid transparent;
+            transition: color 0.2s;
         }
 
-        nav a:hover {
-            color: var(--color-accent);
-            background: var(--color-accent-dim);
-        }
+        nav a:hover { color: var(--moon); }
 
         nav a.active {
-            color: var(--color-accent);
-            background: rgba(232, 164, 74, 0.18);
+            color: var(--eyeshine);
+            border-bottom-color: var(--eyeshine);
+        }
+
+        .search-box { position: relative; }
+
+        #search-input {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            padding: 0.5rem 0.9rem;
+            border: 1px solid var(--line);
+            border-radius: 3px;
+            background: var(--night);
+            color: var(--moon);
+            width: 190px;
+        }
+
+        #search-input::placeholder { color: var(--moon-faint); }
+
+        #search-results {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 340px;
+            max-width: 84vw;
+            background: var(--dusk);
+            border: 1px solid var(--line);
+            border-radius: 4px;
+            margin-top: 0.5rem;
+            max-height: 420px;
+            overflow-y: auto;
+            display: none;
+            z-index: 1000;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .search-result {
+            display: flex;
+            gap: 0.75rem;
+            align-items: flex-start;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--line);
+            cursor: pointer;
+        }
+
+        .search-result:last-child { border-bottom: none; }
+        .search-result:hover { background: var(--dusk-2); }
+
+        .search-result img {
+            width: 42px;
+            height: 42px;
+            border-radius: 3px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .search-result-name {
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--moon);
+        }
+
+        .search-result-sci {
+            font-family: var(--font-display);
+            font-style: italic;
+            font-size: 0.8rem;
+            color: var(--moon-faint);
+        }
+
+        .search-result-text {
+            font-size: 0.82rem;
+            line-height: 1.5;
+            color: var(--moon-dim);
+            margin-top: 0.15rem;
+        }
+
+        #search-results::-webkit-scrollbar { width: 8px; }
+        #search-results::-webkit-scrollbar-track { background: var(--night); }
+        #search-results::-webkit-scrollbar-thumb {
+            background: var(--dusk-2);
+            border-radius: 4px;
         }
 
         main {
-            max-width: 1000px;
-            margin: 2rem auto;
+            width: 100%;
+            max-width: 960px;
+            margin: 2.5rem auto;
             padding: 0 1.5rem;
+            flex: 1;
         }
 
-        h2, h3, h4 {
-            font-family: 'Space Grotesk', sans-serif;
+        /* ---------- Page headers ---------- */
+        .page-header { margin-bottom: 2rem; }
+
+        .page-eyebrow {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--eyeshine);
+            margin-bottom: 0.5rem;
         }
 
+        .page-header h2 {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: clamp(1.8rem, 4.5vw, 2.6rem);
+            line-height: 1.15;
+            color: var(--moon);
+            margin-bottom: 0.6rem;
+        }
+
+        .page-header p {
+            color: var(--moon-dim);
+            font-size: 1.05rem;
+            max-width: 58ch;
+        }
+
+        /* ---------- Specimen cards ---------- */
         .card {
-            background: var(--card-bg);
-            border-radius: var(--radius-card);
+            background: var(--dusk);
+            border: 1px solid var(--line);
+            border-radius: 6px;
             overflow: hidden;
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border: 1px solid var(--card-border);
             margin-bottom: 2rem;
-            transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-
-        .card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 40px var(--card-hover-glow), 0 4px 20px rgba(0, 0, 0, 0.3);
         }
 
         .card img {
             width: 100%;
-            max-height: 420px;
+            height: 420px;
             object-fit: cover;
-            object-position: center 25%;
             display: block;
         }
 
-        .card-body { padding: 2rem; }
-
-        .species-tag {
-            display: inline-block;
-            background: var(--color-accent-dim);
-            color: var(--color-accent);
-            padding: 0.3rem 0.9rem;
-            border-radius: var(--radius-badge);
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin-bottom: 0.75rem;
-            letter-spacing: 0.5px;
-            border: 1px solid rgba(232, 164, 74, 0.3);
-        }
-
-        .conservation-badge {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            border-radius: var(--radius-badge);
-            font-size: 0.75rem;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            margin-left: 0.5rem;
-        }
-
-        .badge-cr { background: var(--badge-cr-bg); color: var(--badge-cr-color); border: 1px solid var(--badge-cr-border); }
-        .badge-en { background: var(--badge-en-bg); color: var(--badge-en-color); border: 1px solid var(--badge-en-border); }
-        .badge-vu { background: var(--badge-vu-bg); color: var(--badge-vu-color); border: 1px solid var(--badge-vu-border); }
-        .badge-lc { background: var(--badge-lc-bg); color: var(--badge-lc-color); border: 1px solid var(--badge-lc-border); }
-
-        .fact-text {
-            font-size: 1.2rem;
-            line-height: 1.8;
-            color: var(--text-primary);
-        }
-
-        .btn {
-            display: inline-block;
-            background: linear-gradient(135deg, var(--btn-primary-from), var(--btn-primary-to));
-            color: #fff;
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: var(--radius-btn);
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
-            margin-top: 1.5rem;
-            font-family: inherit;
-        }
-
-        .btn:hover {
-            background: linear-gradient(135deg, #6b5dd0, #8c7de5);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 20px rgba(90, 77, 191, 0.4);
-        }
-
-        .btn:active { transform: translateY(0); }
-
-        .btn-secondary {
-            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
-            border: 1px solid rgba(255,255,255,0.15);
-        }
-
-        .btn-secondary:hover {
-            background: linear-gradient(135deg, rgba(255,255,255,0.18), rgba(255,255,255,0.08));
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-        }
-
-        .btn-quiz {
-            background: linear-gradient(135deg, var(--btn-quiz-from), var(--btn-quiz-to));
-        }
-
-        .btn-quiz:hover {
-            background: linear-gradient(135deg, #e4a44a, #c88e3a);
-            box-shadow: 0 4px 20px rgba(212, 148, 58, 0.4);
-        }
-
-        .fact-list { list-style: none; }
-
-        .fact-list li {
-            padding: 1.25rem 0;
-            border-bottom: 1px solid var(--card-border);
-            line-height: 1.7;
-            display: flex;
-            gap: 1rem;
-            align-items: flex-start;
-        }
-
-        .fact-list li:last-child { border-bottom: none; }
-
-        .fact-bullet {
-            color: var(--color-accent);
-            font-size: 1.2rem;
-            flex-shrink: 0;
-            margin-top: 0.15rem;
-        }
-
-        .species-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 1.25rem;
-            margin-bottom: 2rem;
-        }
-
-        .species-card {
-            display: block;
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: calc(var(--radius-card) - 2px);
-            overflow: hidden;
-            text-decoration: none;
-            transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-
-        .species-card:hover {
-            background: rgba(255, 255, 255, 0.09);
-            border-color: rgba(232, 164, 74, 0.3);
-            transform: translateY(-4px);
-            box-shadow: 0 8px 32px var(--card-hover-glow), 0 4px 16px rgba(0, 0, 0, 0.3);
-        }
-
-        .species-card-img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            object-position: center 30%;
-            display: block;
-        }
-
-        .species-card-body {
-            padding: 1rem 1.25rem;
-        }
-
-        .species-card-name {
-            font-family: 'Space Grotesk', sans-serif;
-            color: var(--color-primary);
-            font-weight: 600;
-            font-size: 1.05rem;
-            margin-bottom: 0.25rem;
-        }
-
-        .species-card-sci {
-            color: var(--text-muted);
-            font-style: italic;
-            font-size: 0.85rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .species-card-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.8rem;
-            color: var(--text-faint);
-        }
+        .card-body { padding: 2rem 2.25rem 2.25rem; }
 
         .placeholder-img {
             width: 100%;
-            max-height: 420px;
-            aspect-ratio: 16 / 9;
-            background: linear-gradient(135deg, var(--bg-accent) 0%, #252060 100%);
+            height: 420px;
+            background: var(--night-deep);
             position: relative;
             overflow: hidden;
+            border-bottom: 1px solid var(--line);
         }
 
         .placeholder-img img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            object-position: center 25%;
             display: block;
         }
 
         .placeholder-img .fallback-emoji {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            inset: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 5rem;
+            gap: 1.8rem;
         }
+
+        /* Eyeshine: a lemur watching from the dark */
+        .eyeshine {
+            display: flex;
+            gap: 1.6rem;
+            justify-content: center;
+            padding: 1.2rem 0;
+            margin-bottom: 0.75rem;
+        }
+
+        .eyeshine i, .fallback-emoji i {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: var(--eyeshine);
+            box-shadow: 0 0 20px 5px rgba(239, 168, 59, 0.4);
+        }
+
+        /* ---------- Tags: specimen labels ---------- */
+        .species-tag {
+            display: inline-block;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--night-deep);
+            background: var(--eyeshine);
+            padding: 0.25rem 0.65rem;
+            border-radius: 2px;
+        }
+
+        a .species-tag:hover { background: var(--moon); }
 
         .category-tag {
             display: inline-block;
-            padding: 0.15rem 0.5rem;
-            border-radius: 6px;
-            font-size: 0.7rem;
-            font-weight: 600;
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-right: 0.5rem;
+            color: var(--moon-dim);
+            border: 1px solid var(--line);
+            padding: 0.2rem 0.55rem;
+            border-radius: 2px;
+            margin-right: 0.4rem;
         }
 
-        .cat-behavior { background: rgba(78, 140, 222, 0.2); color: #6ba8f0; }
-        .cat-anatomy { background: rgba(168, 100, 222, 0.2); color: #b890f0; }
-        .cat-ecology { background: rgba(96, 216, 160, 0.2); color: #60d8a0; }
-        .cat-conservation { background: rgba(240, 104, 120, 0.2); color: #f06878; }
-        .cat-biology { background: rgba(232, 164, 74, 0.2); color: #e8a44a; }
-        .cat-social { background: rgba(100, 160, 222, 0.2); color: #78b8f0; }
-        .cat-science { background: rgba(224, 200, 80, 0.2); color: #e0c850; }
-        .cat-culture { background: rgba(199, 125, 186, 0.2); color: #c77dba; }
-        .cat-reproduction { background: rgba(180, 140, 222, 0.2); color: #c8a8f0; }
-        .cat-taxonomy { background: rgba(96, 200, 190, 0.2); color: #60c8be; }
-        .cat-general { background: rgba(160, 156, 184, 0.2); color: #a09cb8; }
+        .conservation-badge {
+            display: inline-block;
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 0.2rem 0.55rem;
+            border-radius: 2px;
+            border: 1px solid;
+        }
 
-        .page-header {
+        .badge-cr { color: var(--status-cr); border-color: var(--status-cr); background: rgba(224, 90, 61, 0.12); }
+        .badge-en { color: var(--status-en); border-color: var(--status-en); background: rgba(224, 138, 60, 0.12); }
+        .badge-vu { color: var(--status-vu); border-color: var(--status-vu); background: rgba(227, 184, 78, 0.12); }
+        .badge-lc { color: var(--status-lc); border-color: var(--status-lc); background: rgba(157, 184, 120, 0.12); }
+
+        .fact-text {
+            font-family: var(--font-display);
+            font-weight: 400;
+            font-size: 1.35rem;
+            line-height: 1.65;
+            color: var(--moon);
+        }
+
+        .sci-name {
+            font-family: var(--font-display);
+            font-style: italic;
+            color: var(--moon-faint);
+        }
+
+        /* ---------- Buttons ---------- */
+        .btn {
+            display: inline-block;
+            font-family: var(--font-body);
+            font-weight: 600;
+            font-size: 0.95rem;
+            background: var(--laterite);
+            color: var(--moon);
+            padding: 0.75rem 1.5rem;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.2s, transform 0.15s;
+        }
+
+        .btn:hover { background: var(--laterite-deep); }
+        .btn:active { transform: translateY(1px); }
+
+        .btn-secondary {
+            background: transparent;
+            border-color: var(--line);
+            color: var(--moon-dim);
+        }
+
+        .btn-secondary:hover {
+            background: var(--dusk-2);
+            color: var(--moon);
+        }
+
+        .btn-quiz {
+            background: transparent;
+            border-color: var(--eyeshine);
+            color: var(--eyeshine);
+        }
+
+        .btn-quiz:hover {
+            background: var(--eyeshine);
+            color: var(--night-deep);
+        }
+
+        .share-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-family: var(--font-body);
+            font-weight: 600;
+            font-size: 0.9rem;
+            background: transparent;
+            border: 1px solid var(--line);
+            color: var(--moon-dim);
+            padding: 0.75rem 1.2rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: color 0.2s, border-color 0.2s;
+        }
+
+        .share-btn:hover {
+            color: var(--eyeshine);
+            border-color: var(--eyeshine);
+        }
+
+        /* ---------- Fact list ---------- */
+        .fact-list { list-style: none; }
+
+        .fact-list li {
+            padding: 1.1rem 0;
+            border-bottom: 1px solid var(--line);
+            line-height: 1.65;
+            display: flex;
+            gap: 0.9rem;
+            align-items: flex-start;
+        }
+
+        .fact-list li:last-child { border-bottom: none; }
+
+        .fact-bullet {
+            font-family: var(--font-mono);
+            color: var(--laterite);
+            flex-shrink: 0;
+            margin-top: 0.1rem;
+        }
+
+        .section-heading {
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 1.25rem;
+            color: var(--moon);
+            margin: 2rem 0 0.75rem;
+        }
+
+        /* ---------- Species grid ---------- */
+        .species-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+            gap: 1.25rem;
             margin-bottom: 2rem;
         }
 
-        .page-header h2 {
-            font-family: 'Space Grotesk', sans-serif;
-            color: var(--color-primary);
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
+        .species-card {
+            display: block;
+            background: var(--dusk);
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            overflow: hidden;
+            text-decoration: none;
+            transition: border-color 0.2s, transform 0.2s;
         }
 
-        .page-header p {
-            color: var(--text-muted);
-            font-size: 1.05rem;
+        .species-card:hover {
+            border-color: var(--eyeshine);
+            transform: translateY(-3px);
         }
 
+        .species-card-media {
+            position: relative;
+            height: 180px;
+            background: var(--night-deep);
+            overflow: hidden;
+        }
+
+        /* Eyeshine fallback when a species photo is missing */
+        .species-card-media::before,
+        .species-card-media::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 13px;
+            height: 13px;
+            border-radius: 50%;
+            background: var(--eyeshine);
+            box-shadow: 0 0 16px 4px rgba(239, 168, 59, 0.35);
+            transform: translateY(-50%);
+        }
+
+        .species-card-media::before { left: calc(50% - 24px); }
+        .species-card-media::after { left: calc(50% + 11px); }
+
+        .species-card-badge {
+            position: absolute;
+            top: 0.7rem;
+            right: 0.7rem;
+            z-index: 2;
+        }
+
+        .species-card-badge .conservation-badge {
+            background: rgba(20, 16, 29, 0.82);
+        }
+
+        .species-card-img {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .species-card-body { padding: 1rem 1.2rem 1.1rem; }
+
+        .species-card-name {
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--moon);
+            margin-bottom: 0.1rem;
+        }
+
+        .species-card-sci {
+            font-family: var(--font-display);
+            font-style: italic;
+            font-size: 0.85rem;
+            color: var(--moon-faint);
+            margin-bottom: 0.6rem;
+        }
+
+        .species-card-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--moon-dim);
+        }
+
+        /* ---------- Stats: expedition data strip ---------- */
         .stats-bar {
             display: flex;
-            gap: 2rem;
+            gap: 0;
             margin-bottom: 2rem;
+            border: 1px solid var(--line);
+            border-radius: 4px;
+            overflow: hidden;
             flex-wrap: wrap;
         }
 
         .stat {
+            flex: 1;
+            min-width: 130px;
             text-align: center;
+            padding: 0.9rem 1rem;
+            border-right: 1px solid var(--line);
         }
 
+        .stat:last-child { border-right: none; }
+
         .stat-number {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--color-accent);
-            line-height: 1;
+            font-family: var(--font-mono);
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--eyeshine);
+            line-height: 1.2;
         }
 
         .stat-label {
-            font-size: 0.8rem;
-            color: var(--text-faint);
+            font-family: var(--font-mono);
+            font-size: 0.62rem;
+            color: var(--moon-faint);
             text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-top: 0.25rem;
+            letter-spacing: 0.14em;
+            margin-top: 0.2rem;
         }
 
+        /* ---------- Info grid: specimen data ---------- */
         .info-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 0.9rem;
             margin: 1.5rem 0;
         }
 
         .info-item {
-            background: rgba(255, 255, 255, 0.04);
-            border-radius: var(--radius-btn);
-            padding: 1rem;
-            border: 1px solid var(--card-border);
+            background: var(--night);
+            border: 1px solid var(--line);
+            border-radius: 4px;
+            padding: 0.9rem 1rem;
         }
 
         .info-label {
-            font-size: 0.75rem;
-            color: var(--text-faint);
+            font-family: var(--font-mono);
+            font-size: 0.62rem;
+            color: var(--moon-faint);
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.14em;
             margin-bottom: 0.3rem;
         }
 
         .info-value {
             font-size: 0.95rem;
-            color: var(--text-primary);
+            color: var(--moon);
             font-weight: 500;
         }
 
+        .info-stat-number {
+            font-family: var(--font-mono);
+            font-size: 1.7rem;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        /* ---------- Footer ---------- */
         footer {
             text-align: center;
-            padding: 3rem 2rem;
-            color: var(--text-faint);
+            padding: 2.5rem 2rem 3rem;
+            color: var(--moon-faint);
             font-size: 0.85rem;
-            border-top: 1px solid var(--card-border);
-            margin-top: 2rem;
+            margin-top: 3rem;
+            background: var(--night-deep);
         }
 
-        footer a {
-            color: rgba(123, 140, 222, 0.7);
-            text-decoration: none;
+        footer a { color: var(--moon-dim); text-decoration: underline; }
+        footer a:hover { color: var(--eyeshine); }
+
+        .footer-eyebrow {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--eyeshine);
+            margin-bottom: 0.5rem;
         }
 
-        footer a:hover { color: var(--color-primary); }
-
-        /* Animations */
+        /* ---------- Motion ---------- */
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px) scale(0.98); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .fade-in {
-            animation: fadeIn 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+        .fade-in { animation: fadeIn 0.4s ease-out; }
+        .slide-up { animation: fadeIn 0.5s ease-out both; }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
         }
 
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px) scale(0.98); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        .slide-up {
-            animation: slideUp 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-
-        /* Share button */
-        .share-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            color: var(--text-muted);
-            padding: 0.5rem 1rem;
-            border-radius: var(--radius-tag);
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-family: inherit;
-            font-weight: 600;
-        }
-
-        .share-btn:hover {
-            background: rgba(255, 255, 255, 0.15);
-            color: var(--color-accent);
-        }
-
+        /* ---------- Toast ---------- */
         .copied-toast {
             position: fixed;
             bottom: 2rem;
             left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: rgba(90, 77, 191, 0.95);
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: var(--radius-btn);
+            transform: translateX(-50%) translateY(120px);
+            background: var(--eyeshine);
+            color: var(--night-deep);
             font-weight: 600;
-            transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-            z-index: 1000;
-            backdrop-filter: blur(8px);
-        }
-
-        .copied-toast.show {
-            transform: translateX(-50%) translateY(0);
-        }
-
-        /* Search results styling */
-        #search-results::-webkit-scrollbar {
-            width: 8px;
-        }
-        #search-results::-webkit-scrollbar-track {
-            background: rgba(0,0,0,0.3);
-            border-radius: 4px;
-        }
-        #search-results::-webkit-scrollbar-thumb {
-            background: rgba(123, 140, 222, 0.5);
-            border-radius: 4px;
-        }
-        #search-results::-webkit-scrollbar-thumb:hover {
-            background: rgba(123, 140, 222, 0.7);
-        }
-
-        /* === Easter Egg: Night Vision (Egg #1) === */
-        body.ee-night-vision {
-            transition: background 0.8s, color 0.8s;
-            background: #0a0a2e !important;
-        }
-        body.ee-night-vision p,
-        body.ee-night-vision span,
-        body.ee-night-vision a,
-        body.ee-night-vision h1, body.ee-night-vision h2, body.ee-night-vision h3 {
-            transition: color 0.8s;
-        }
-        body.ee-night-vision header,
-        body.ee-night-vision .card,
-        body.ee-night-vision .species-card,
-        body.ee-night-vision .info-item {
-            background: rgba(0, 255, 20, 0.03) !important;
-            border-color: rgba(57, 255, 20, 0.15) !important;
-        }
-        body.ee-night-vision,
-        body.ee-night-vision .fact-text,
-        body.ee-night-vision .species-card-name,
-        body.ee-night-vision .page-header h2,
-        body.ee-night-vision h3 {
-            color: #39ff14 !important;
-        }
-        body.ee-night-vision nav a,
-        body.ee-night-vision .species-card-sci,
-        body.ee-night-vision .species-card-meta,
-        body.ee-night-vision .info-label,
-        body.ee-night-vision .stat-label {
-            color: rgba(57, 255, 20, 0.5) !important;
-        }
-        body.ee-night-vision .stat-number,
-        body.ee-night-vision .species-tag,
-        body.ee-night-vision header h1 {
-            color: #39ff14 !important;
-        }
-        .ee-lemur-eyes {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            display: flex;
-            gap: 60px;
-            z-index: 200;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 1s ease;
-        }
-        .ee-lemur-eyes.visible { opacity: 1; }
-        .ee-lemur-eye {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background: radial-gradient(circle, #ffb347 30%, #e88a20 60%, #c46000 100%);
-            box-shadow: 0 0 30px 10px rgba(232, 164, 74, 0.4), 0 0 60px 20px rgba(232, 164, 74, 0.15);
-        }
-
-        /* === Easter Egg: Sifaka Dance (Egg #2) === */
-        @keyframes sifakaDance {
-            0%, 100% { transform: translateX(0) rotate(0deg); }
-            25% { transform: translateX(-12px) rotate(-5deg); }
-            75% { transform: translateX(12px) rotate(5deg); }
-        }
-        body.ee-sifaka-dance img {
-            animation: sifakaDance 0.4s ease-in-out 12 !important;
-        }
-
-        /* === Easter Egg: Madagascar Midnight (Egg #5) === */
-        .ee-firefly {
-            position: fixed;
-            border-radius: 50%;
-            background: var(--color-accent);
-            pointer-events: none;
-            z-index: 50;
-            animation: fireflyDrift var(--duration) ease-in-out infinite;
-            animation-delay: var(--delay);
-        }
-        @keyframes fireflyDrift {
-            0% { opacity: 0; transform: translate(0, 0); }
-            15% { opacity: 0.9; }
-            50% { opacity: 0.6; }
-            85% { opacity: 0.9; }
-            100% { opacity: 0; transform: translate(var(--dx), var(--dy)); }
-        }
-        .ee-midnight-banner {
-            background: linear-gradient(135deg, rgba(90, 77, 191, 0.2), rgba(199, 125, 186, 0.15));
-            border-bottom: 1px solid var(--color-tertiary-dim);
-            padding: 0.6rem 2rem;
-            text-align: center;
             font-size: 0.9rem;
-            color: var(--color-tertiary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            position: relative;
-            z-index: 99;
-        }
-        .ee-midnight-banner button {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            font-size: 1.1rem;
-            padding: 0 0.5rem;
-            position: absolute;
-            right: 1rem;
-        }
-        .ee-midnight-banner button:hover { color: var(--text-primary); }
-
-        /* === Easter Egg: Ghost Lemur card (Egg #9) === */
-        .ee-ghost-species {
-            opacity: 0;
-            transition: opacity 0.8s ease;
-        }
-        .ee-ghost-species:hover,
-        .ee-ghost-species:focus-within {
-            opacity: 1;
-            filter: grayscale(0.3);
-        }
-        .ee-ghost-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(12, 14, 26, 0.9);
-            backdrop-filter: blur(8px);
-            z-index: 500;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            cursor: pointer;
-        }
-        .ee-ghost-overlay.visible { opacity: 1; }
-        .ee-ghost-overlay-content {
-            max-width: 540px;
-            padding: 2.5rem;
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius-hero);
-            text-align: center;
-        }
-        .ee-ghost-overlay-content h3 {
-            color: var(--text-muted);
-            margin-bottom: 0.5rem;
-        }
-        .ee-ghost-overlay-content p {
-            color: var(--text-primary);
-            line-height: 1.7;
-            margin-bottom: 1rem;
+            padding: 0.7rem 1.4rem;
+            border-radius: 4px;
+            transition: transform 0.3s ease;
+            z-index: 1000;
         }
 
+        .copied-toast.show { transform: translateX(-50%) translateY(0); }
+
+        /* ---------- Responsive ---------- */
         @media (max-width: 768px) {
-            header {
-                flex-direction: column;
-                gap: 0.75rem;
-            }
+            header { justify-content: center; text-align: center; }
+            .masthead .masthead-eyebrow { text-align: center; }
             nav { justify-content: center; }
+            #search-results { right: auto; left: 50%; transform: translateX(-50%); }
         }
 
         @media (max-width: 600px) {
             header { padding: 1rem; }
-            header h1 { font-size: 1.4rem; }
-            nav a { font-size: 0.8rem; padding: 0.4rem 0.7rem; }
-            .card img, .placeholder-img { max-height: 250px; }
-            .fact-text { font-size: 1.05rem; }
-            main { padding: 0 1rem; margin: 1rem auto; }
+            .masthead h1 { font-size: 1.35rem; }
+            nav a { font-size: 0.7rem; padding: 0.4rem 0.55rem; }
+            .card img, .placeholder-img { height: 250px; }
+            .fact-text { font-size: 1.15rem; }
+            .card-body { padding: 1.5rem 1.25rem; }
+            main { padding: 0 1rem; margin: 1.5rem auto; }
             .species-grid { grid-template-columns: 1fr; }
-            .stats-bar { justify-content: center; }
-            .info-grid { grid-template-columns: 1fr; }
+            .info-grid { grid-template-columns: 1fr 1fr; }
+            .stats-bar { flex-direction: column; }
+            .stat { border-right: none; border-bottom: 1px solid var(--line); text-align: left; display: flex; align-items: baseline; gap: 0.75rem; padding: 0.7rem 1rem; }
+            .stat:last-child { border-bottom: none; }
+            .stat-label { margin-top: 0; }
         }
     </style>
     {% block extra_head %}{% endblock %}
 </head>
 <body>
     <header>
-        <h1 id="site-logo"><span>&#129431;</span> Lemur Facts</h1>
+        <a href="./" class="masthead">
+            <span class="masthead-eyebrow">Madagascar &middot; L'&Icirc;le Rouge</span>
+            <h1>Lemur Facts</h1>
+        </a>
         <nav>
-            <a href="./" {% if active_page == 'index' %}class="active"{% endif %}>Random Fact</a>
-            <a href="all.html" {% if active_page == 'all' %}class="active"{% endif %}>All Species</a>
+            <a href="./" {% if active_page == 'index' %}class="active"{% endif %}>Field Notes</a>
+            <a href="all.html" {% if active_page == 'all' %}class="active"{% endif %}>Species</a>
             <a href="conservation.html" {% if active_page == 'conservation' %}class="active"{% endif %}>Conservation</a>
             <a href="quiz.html" {% if active_page == 'quiz' %}class="active"{% endif %}>Quiz</a>
         </nav>
-        <div style="position: relative; margin-left: 1rem;">
-            <input type="text" id="search-input" placeholder="Search lemurs..."
-                   style="padding: 0.5rem 1rem; border-radius: 20px; border: 1px solid rgba(123,140,222,0.2);
-                          background: rgba(255,255,255,0.07); color: var(--text-primary); width: 200px;
-                          font-family: 'Inter', sans-serif; font-size: 0.85rem;"
-                   onkeyup="handleSearch(event)">
-            <div id="search-results" style="position: absolute; top: 100%; left: 0; right: 0;
-                                         background: rgba(12, 14, 26, 0.95); border-radius: 10px; margin-top: 0.5rem;
-                                         max-height: 400px; overflow-y: auto; display: none; z-index: 1000;
-                                         border: 1px solid var(--card-border); backdrop-filter: blur(16px);"></div>
+        <div class="search-box">
+            <input type="text" id="search-input" placeholder="Search the notebook&hellip;"
+                   onkeyup="handleSearch(event)" aria-label="Search lemurs">
+            <div id="search-results"></div>
         </div>
     </header>
+    <div class="tail-stripe" aria-hidden="true"></div>
     <main>
         {% block content %}{% endblock %}
     </main>
+    <div class="tail-stripe" aria-hidden="true"></div>
     <footer>
-        <p>Lemur Facts &mdash; All lemurs are endemic to Madagascar</p>
-        <p style="margin-top: 0.5rem;">Images sourced from <a href="https://commons.wikimedia.org/" target="_blank">Wikimedia Commons</a> under CC/Public Domain licenses</p>
+        <p class="footer-eyebrow">Endemic to Madagascar &middot; Nowhere else on Earth</p>
+        <p>Lemur Facts &mdash; a night field guide to the Red Island</p>
+        <p style="margin-top: 0.5rem;">Images sourced from <a href="https://commons.wikimedia.org/" target="_blank" rel="noopener">Wikimedia Commons</a> under CC/Public Domain licenses</p>
     </footer>
     <div class="copied-toast" id="toast">Copied to clipboard!</div>
-    <div class="ee-lemur-eyes" id="ee-eyes"><div class="ee-lemur-eye"></div><div class="ee-lemur-eye"></div></div>
     <script>
         function showToast(msg) {
             const toast = document.getElementById('toast');
@@ -758,6 +751,7 @@
         function shareFact(text) {
             const shareText = text + ' - Lemur Facts';
             const shareUrl = window.location.href;
+
             if (navigator.share) {
                 navigator.share({
                     title: 'Lemur Facts',
@@ -787,34 +781,17 @@
             });
         }
 
-        // Header scroll effect
-        function setupHeaderScroll() {
-            const header = document.querySelector('header');
-            let lastScroll = 0;
-            window.addEventListener('scroll', () => {
-                const currentScroll = window.pageYOffset;
-                if (currentScroll <= 0) {
-                    header.classList.remove('scrolled');
-                    return;
-                }
-                if (currentScroll > 50 && currentScroll > lastScroll) {
-                    header.classList.add('scrolled');
-                } else if (currentScroll < lastScroll) {
-                    header.classList.remove('scrolled');
-                }
-                lastScroll = currentScroll;
-            });
-        }
-
         // Search functionality
         let searchTimeout = null;
         function handleSearch(event) {
             const query = event.target.value.trim();
             const resultsDiv = document.getElementById('search-results');
+
             if (query.length < 2) {
                 resultsDiv.style.display = 'none';
                 return;
             }
+
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(() => {
                 fetch(`/api/search?q=${encodeURIComponent(query)}`)
@@ -824,45 +801,37 @@
                             resultsDiv.style.display = 'none';
                             return;
                         }
+
                         resultsDiv.innerHTML = '';
                         data.forEach(item => {
                             const div = document.createElement('div');
-                            div.style.padding = '0.75rem 1rem';
-                            div.style.borderBottom = '1px solid rgba(123,140,222,0.1)';
-                            div.style.cursor = 'pointer';
+                            div.className = 'search-result';
+
                             if (item.type === 'species') {
                                 div.innerHTML = `
-                                    <div style="display: flex; gap: 0.75rem; align-items: center;">
-                                        <img src="images/${item.image}" alt="${item.common_name}"
-                                             style="width: 40px; height: 40px; border-radius: 6px; object-fit: cover;"
-                                             onerror="this.style.display='none'">
-                                        <div>
-                                            <div style="color: var(--color-primary); font-weight: 700;">${item.common_name}</div>
-                                            <div style="color: var(--text-faint); font-style: italic; font-size: 0.8rem;">${item.scientific_name}</div>
-                                            <div style="color: var(--text-muted); font-size: 0.8rem; margin-top: 0.25rem;">${item.description}</div>
-                                        </div>
+                                    <img src="images/${item.image}" alt="${item.common_name}" onerror="this.style.display='none'">
+                                    <div>
+                                        <div class="search-result-name">${item.common_name}</div>
+                                        <div class="search-result-sci">${item.scientific_name}</div>
+                                        <div class="search-result-text">${item.description}</div>
                                     </div>
                                 `;
-                                div.onclick = () => window.location.href = `species/${item.common_name.toLowerCase().replace(/\\s+/g, '-')}/`;
+                                div.onclick = () => window.location.href = `species/${item.common_name.toLowerCase().replace(/\s+/g, '-')}/`;
                             } else {
                                 div.innerHTML = `
-                                    <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
-                                        <img src="images/${item.image}" alt="${item.species}"
-                                             style="width: 40px; height: 40px; border-radius: 6px; object-fit: cover;"
-                                             onerror="this.style.display='none'">
-                                        <div>
-                                            <div style="color: var(--color-primary); font-weight: 700;">${item.species}</div>
-                                            <div style="color: var(--text-primary); font-size: 0.85rem; margin-top: 0.25rem;">${item.fact}</div>
-                                            ${item.category ? `<span class="category-tag cat-${item.category}" style="margin-top: 0.25rem; font-size: 0.7rem;">${item.category}</span>` : ''}
-                                        </div>
+                                    <img src="images/${item.image}" alt="${item.species}" onerror="this.style.display='none'">
+                                    <div>
+                                        <div class="search-result-name">${item.species}</div>
+                                        <div class="search-result-text">${item.fact}</div>
+                                        ${item.category ? `<span class="category-tag" style="margin-top: 0.3rem;">${item.category}</span>` : ''}
                                     </div>
                                 `;
-                                div.onclick = () => window.location.href = `species/${item.species.toLowerCase().replace(/\\s+/g, '-')}/`;
+                                div.onclick = () => window.location.href = `species/${item.species.toLowerCase().replace(/\s+/g, '-')}/`;
                             }
-                            div.onmouseenter = () => div.style.background = 'rgba(123,140,222,0.08)';
-                            div.onmouseleave = () => div.style.background = 'transparent';
+
                             resultsDiv.appendChild(div);
                         });
+
                         resultsDiv.style.display = 'block';
                     })
                     .catch(() => resultsDiv.style.display = 'none');
@@ -873,119 +842,10 @@
         document.addEventListener('click', (e) => {
             const searchInput = document.getElementById('search-input');
             const searchResults = document.getElementById('search-results');
-            if (searchInput && searchResults && !searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+            if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
                 searchResults.style.display = 'none';
             }
         });
-
-        // Initialize on DOM load
-        document.addEventListener('DOMContentLoaded', () => {
-            setupHeaderScroll();
-        });
-
-        /* === Easter Egg #1: The Lemur Call — type "LEMUR" === */
-        (function() {
-            let buf = [];
-            let timer = null;
-            document.addEventListener('keydown', function(e) {
-                if (e.target.matches('input, textarea')) return;
-                clearTimeout(timer);
-                buf.push(e.key.toLowerCase());
-                if (buf.length > 5) buf.shift();
-                timer = setTimeout(function() { buf = []; }, 2000);
-                if (buf.join('') === 'lemur') {
-                    buf = [];
-                    if (document.body.classList.contains('ee-night-vision')) return;
-                    document.body.classList.add('ee-night-vision');
-                    var eyes = document.getElementById('ee-eyes');
-                    setTimeout(function() { eyes.classList.add('visible'); }, 300);
-                    showToast('Night vision activated! Lemurs are nocturnal, after all.');
-                    setTimeout(function() {
-                        eyes.classList.remove('visible');
-                        setTimeout(function() {
-                            document.body.classList.remove('ee-night-vision');
-                        }, 800);
-                    }, 7000);
-                }
-            });
-        })();
-
-        /* === Easter Egg #2: The Sifaka Dance — click logo 5x === */
-        (function() {
-            var clicks = 0;
-            var timer = null;
-            var logo = document.getElementById('site-logo');
-            logo.addEventListener('click', function() {
-                clicks++;
-                clearTimeout(timer);
-                timer = setTimeout(function() { clicks = 0; }, 3000);
-                if (clicks >= 5) {
-                    clicks = 0;
-                    if (document.body.classList.contains('ee-sifaka-dance')) return;
-                    document.body.classList.add('ee-sifaka-dance');
-                    showToast('Sifaka dance party! They really do hop like this.');
-                    setTimeout(function() {
-                        document.body.classList.remove('ee-sifaka-dance');
-                    }, 5000);
-                }
-            });
-        })();
-
-        /* === Easter Egg #5: Madagascar Midnight — visit 12-4 AM === */
-        (function() {
-            var hour = new Date().getHours();
-            if (hour >= 0 && hour < 4) {
-                // Fireflies
-                var container = document.createElement('div');
-                container.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:50;';
-                for (var i = 0; i < 18; i++) {
-                    var f = document.createElement('div');
-                    f.className = 'ee-firefly';
-                    var size = 3 + Math.random() * 3;
-                    f.style.width = size + 'px';
-                    f.style.height = size + 'px';
-                    f.style.left = Math.random() * 100 + '%';
-                    f.style.top = Math.random() * 100 + '%';
-                    f.style.setProperty('--duration', (6 + Math.random() * 8) + 's');
-                    f.style.setProperty('--delay', (Math.random() * 5) + 's');
-                    f.style.setProperty('--dx', (Math.random() * 100 - 50) + 'px');
-                    f.style.setProperty('--dy', (Math.random() * 100 - 50) + 'px');
-                    f.style.boxShadow = '0 0 ' + (4 + size) + 'px ' + (size/2) + 'px rgba(232, 164, 74, 0.4)';
-                    container.appendChild(f);
-                }
-                document.body.appendChild(container);
-                // Banner
-                var banner = document.createElement('div');
-                banner.className = 'ee-midnight-banner';
-                banner.innerHTML = '<span>&#127769; You\'re up during lemur hours! Most lemurs are active at night.</span><button onclick="this.parentElement.remove()">&times;</button>';
-                document.body.insertBefore(banner, document.querySelector('main'));
-            }
-        })();
-
-        /* === Easter Egg #8: Console Naturalist === */
-        (function() {
-            console.log('%c' + [
-                '        /\\_/\\    ',
-                '       ( o.o )   ',
-                '        > ^ <    ',
-                '       /|   |\\  ',
-                '      (_|   |_)  ',
-                '        || ||    ',
-                '   ~~~~~~~~~~~~~~~~~~~~',
-                '    L E M U R  F A C T S',
-            ].join('\n'), 'color: #7b8cde; font-size: 14px; font-family: monospace; line-height: 1.3;');
-            console.log('%cHey there, fellow developer!', 'color: #e8a44a; font-size: 16px; font-weight: bold;');
-            console.log('%cDid you know? The word "lemur" comes from Latin "lemures" meaning "ghosts" or "spirits of the dead" \u2014 Roman mythology held that they were restless spirits wandering at night.', 'color: #e4e0f0; font-size: 12px;');
-            console.log('%cType %clemurSecret()%c in the console for a surprise...', 'color: #a09cb8;', 'color: #e8a44a; font-weight: bold;', 'color: #a09cb8;');
-            window.lemurSecret = function() {
-                var logo = document.getElementById('site-logo');
-                var orig = logo.innerHTML;
-                logo.innerHTML = '<span>\u{1F47B}</span> Lemur Facts';
-                showToast('Lemures... the ghosts of Madagascar');
-                setTimeout(function() { logo.innerHTML = orig; }, 10000);
-                return 'The spirits have been summoned...';
-            };
-        })();
     </script>
     {% block extra_scripts %}{% endblock %}
 </body>
