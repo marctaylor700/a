@@ -128,6 +128,21 @@ def write_json_data(data):
     with open(os.path.join(data_dir, "quiz.json"), "w") as fp:
         json.dump(quiz_json, fp)
 
+    # species.json - search index for the header search box (static site)
+    species_json = [
+        {
+            "common_name": s["common_name"],
+            "scientific_name": s["scientific_name"],
+            "conservation_status": s["conservation_status"],
+            "description": s["description"],
+            "image": s["image_filename"],
+            "slug": data["slug_map"].get(s["common_name"], ""),
+        }
+        for s in data["species_list"]
+    ]
+    with open(os.path.join(data_dir, "species.json"), "w") as fp:
+        json.dump(species_json, fp)
+
 
 def build_site():
     """Build the complete static site."""
@@ -192,7 +207,18 @@ def build_site():
     print("  Rendered all.html")
 
     # 3. Conservation page
-    status_order = ["Critically Endangered", "Endangered", "Vulnerable", "Least Concern"]
+    status_order = [
+        "Critically Endangered",
+        "Endangered",
+        "Vulnerable",
+        "Near Threatened",
+        "Least Concern",
+    ]
+    # Defensive: append any status present in the data but not ranked above,
+    # so a new conservation status can never silently drop species from the page.
+    for status in data["species_by_status"]:
+        if status not in status_order:
+            status_order.append(status)
     tmpl = env.get_template("conservation.html")
     html = tmpl.render(
         **base_ctx,

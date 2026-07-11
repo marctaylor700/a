@@ -56,9 +56,15 @@
             {% elif status == "Vulnerable" %}
                 <span class="conservation-badge badge-vu">VU</span>
                 <span style="color: var(--status-vu);">Vulnerable</span>
-            {% else %}
+            {% elif status == "Near Threatened" %}
+                <span class="conservation-badge badge-nt">NT</span>
+                <span style="color: var(--status-nt);">Near Threatened</span>
+            {% elif status == "Least Concern" %}
                 <span class="conservation-badge badge-lc">LC</span>
                 <span style="color: var(--status-lc);">Least Concern</span>
+            {% else %}
+                <span class="conservation-badge badge-lc">{{ status }}</span>
+                <span style="color: var(--status-lc);">{{ status }}</span>
             {% endif %}
             <span style="font-family: var(--font-mono); color: var(--moon-faint); font-size: 0.8rem; font-weight: 400;">
                 {{ species_by_status[status]|length }} species

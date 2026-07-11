@@ -28,6 +28,7 @@
             --status-cr: #e05a3d;
             --status-en: #e08a3c;
             --status-vu: #e3b84e;
+            --status-nt: #bcc24a;
             --status-lc: #9db878;
             --font-display: 'Besley', Georgia, serif;
             --font-body: 'Archivo', 'Helvetica Neue', sans-serif;
@@ -350,6 +351,7 @@
         .badge-cr { color: var(--status-cr); border-color: var(--status-cr); background: rgba(224, 90, 61, 0.12); }
         .badge-en { color: var(--status-en); border-color: var(--status-en); background: rgba(224, 138, 60, 0.12); }
         .badge-vu { color: var(--status-vu); border-color: var(--status-vu); background: rgba(227, 184, 78, 0.12); }
+        .badge-nt { color: var(--status-nt); border-color: var(--status-nt); background: rgba(188, 194, 74, 0.12); }
         .badge-lc { color: var(--status-lc); border-color: var(--status-lc); background: rgba(157, 184, 120, 0.12); }
 
         .fact-text {
@@ -782,8 +784,50 @@
             });
         }
 
-        // Search functionality
+        // Search functionality — runs entirely client-side over the static
+        // data files, so it works on GitHub Pages (no Flask API at runtime).
         let searchTimeout = null;
+        let searchIndex = null;      // { species: [...], facts: [...] } once loaded
+        let searchIndexLoading = null;
+
+        function escapeHtml(str) {
+            return String(str).replace(/[&<>"']/g, c => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            }[c]));
+        }
+
+        function loadSearchIndex() {
+            if (searchIndex) return Promise.resolve(searchIndex);
+            if (searchIndexLoading) return searchIndexLoading;
+            searchIndexLoading = Promise.all([
+                fetch('data/species.json').then(r => r.json()),
+                fetch('data/facts.json').then(r => r.json())
+            ]).then(([species, facts]) => {
+                searchIndex = { species, facts };
+                return searchIndex;
+            });
+            return searchIndexLoading;
+        }
+
+        function runSearch(query, idx) {
+            const q = query.toLowerCase();
+            const results = [];
+            for (const s of idx.species) {
+                if (s.common_name.toLowerCase().includes(q) ||
+                    (s.scientific_name || '').toLowerCase().includes(q) ||
+                    (s.description || '').toLowerCase().includes(q)) {
+                    results.push({ type: 'species', item: s });
+                }
+            }
+            for (const f of idx.facts) {
+                if (f.species.toLowerCase().includes(q) ||
+                    f.fact.toLowerCase().includes(q)) {
+                    results.push({ type: 'fact', item: f });
+                }
+            }
+            return results.slice(0, 12);
+        }
+
         function handleSearch(event) {
             const query = event.target.value.trim();
             const resultsDiv = document.getElementById('search-results');
@@ -795,48 +839,46 @@
 
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(() => {
-                fetch(`/api/search?q=${encodeURIComponent(query)}`)
-                    .then(r => r.json())
-                    .then(data => {
-                        if (data.length === 0) {
-                            resultsDiv.style.display = 'none';
-                            return;
+                loadSearchIndex().then(idx => {
+                    const results = runSearch(query, idx);
+                    if (results.length === 0) {
+                        resultsDiv.style.display = 'none';
+                        return;
+                    }
+
+                    resultsDiv.innerHTML = '';
+                    results.forEach(({ type, item }) => {
+                        const div = document.createElement('div');
+                        div.className = 'search-result';
+
+                        if (type === 'species') {
+                            const desc = item.description && item.description.length > 200
+                                ? item.description.slice(0, 200) + '…' : (item.description || '');
+                            div.innerHTML = `
+                                <img src="images/${escapeHtml(item.image)}" alt="${escapeHtml(item.common_name)}" onerror="this.style.display='none'">
+                                <div>
+                                    <div class="search-result-name">${escapeHtml(item.common_name)}</div>
+                                    <div class="search-result-sci">${escapeHtml(item.scientific_name)}</div>
+                                    <div class="search-result-text">${escapeHtml(desc)}</div>
+                                </div>
+                            `;
+                        } else {
+                            div.innerHTML = `
+                                <img src="images/${escapeHtml(item.image)}" alt="${escapeHtml(item.species)}" onerror="this.style.display='none'">
+                                <div>
+                                    <div class="search-result-name">${escapeHtml(item.species)}</div>
+                                    <div class="search-result-text">${escapeHtml(item.fact)}</div>
+                                    ${item.category ? `<span class="category-tag" style="margin-top: 0.3rem;">${escapeHtml(item.category)}</span>` : ''}
+                                </div>
+                            `;
                         }
+                        div.onclick = () => window.location.href = `species/${item.slug}/`;
+                        resultsDiv.appendChild(div);
+                    });
 
-                        resultsDiv.innerHTML = '';
-                        data.forEach(item => {
-                            const div = document.createElement('div');
-                            div.className = 'search-result';
-
-                            if (item.type === 'species') {
-                                div.innerHTML = `
-                                    <img src="images/${item.image}" alt="${item.common_name}" onerror="this.style.display='none'">
-                                    <div>
-                                        <div class="search-result-name">${item.common_name}</div>
-                                        <div class="search-result-sci">${item.scientific_name}</div>
-                                        <div class="search-result-text">${item.description}</div>
-                                    </div>
-                                `;
-                                div.onclick = () => window.location.href = `species/${item.common_name.toLowerCase().replace(/\s+/g, '-')}/`;
-                            } else {
-                                div.innerHTML = `
-                                    <img src="images/${item.image}" alt="${item.species}" onerror="this.style.display='none'">
-                                    <div>
-                                        <div class="search-result-name">${item.species}</div>
-                                        <div class="search-result-text">${item.fact}</div>
-                                        ${item.category ? `<span class="category-tag" style="margin-top: 0.3rem;">${item.category}</span>` : ''}
-                                    </div>
-                                `;
-                                div.onclick = () => window.location.href = `species/${item.species.toLowerCase().replace(/\s+/g, '-')}/`;
-                            }
-
-                            resultsDiv.appendChild(div);
-                        });
-
-                        resultsDiv.style.display = 'block';
-                    })
-                    .catch(() => resultsDiv.style.display = 'none');
-            }, 300);
+                    resultsDiv.style.display = 'block';
+                }).catch(() => { resultsDiv.style.display = 'none'; });
+            }, 250);
         }
 
         // Close search when clicking outside
