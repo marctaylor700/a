@@ -1,0 +1,2 @@
+description = "Cross-cutting implementation when specialists do not fit"
+default_capability_mode = "read-write"

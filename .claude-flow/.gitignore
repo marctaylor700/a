@@ -1,0 +1,10 @@
+# Claude Flow / Ruflo runtime files
+data/
+logs/
+sessions/
+neural/
+metrics/
+*.log
+*.tmp
+daemon.pid
+daemon-state.json

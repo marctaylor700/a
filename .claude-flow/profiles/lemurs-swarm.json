@@ -1,0 +1,127 @@
+{
+  "name": "lemurs",
+  "description": "Multi-agent team for Lemur Facts (Flask + SQLite seed + SSG → GitHub Pages; Grok-executed)",
+  "topology": "hierarchical-mesh",
+  "maxAgents": 12,
+  "strategy": "specialized",
+  "consensusMechanism": "raft",
+  "memoryNamespace": "lemurs",
+  "executor": "grok-spawn_subagent",
+  "roles": [
+    {
+      "agentId": "lem-coordinator",
+      "agentType": "coordinator",
+      "domain": "orchestration",
+      "mapsTo": null,
+      "execution": "parent",
+      "notes": "Parent Grok session is queen — plans, merges, never owns domain files when specialists are spawned"
+    },
+    {
+      "agentId": "lem-data",
+      "agentType": "coder",
+      "domain": "species-data",
+      "mapsTo": "lemur-data",
+      "owns": ["init_db.py"],
+      "execution": "spawn_subagent",
+      "notes": "Serial with content-facts and quiz-content on init_db.py"
+    },
+    {
+      "agentId": "lem-quiz",
+      "agentType": "coder",
+      "domain": "quiz",
+      "mapsTo": "quiz-content",
+      "owns": ["init_db.py"],
+      "execution": "spawn_subagent",
+      "notes": "quiz_questions seed only; serial with lemur-data/content-facts on init_db.py"
+    },
+    {
+      "agentId": "lem-flask",
+      "agentType": "coder",
+      "domain": "flask-api",
+      "mapsTo": "flask-app",
+      "owns": ["app.py", "requirements.txt"],
+      "execution": "spawn_subagent"
+    },
+    {
+      "agentId": "lem-builder",
+      "agentType": "coder",
+      "domain": "ssg",
+      "mapsTo": "site-builder",
+      "owns": ["build.py", ".github/workflows/**", "docs/**"],
+      "execution": "spawn_subagent"
+    },
+    {
+      "agentId": "lem-ui",
+      "agentType": "coder",
+      "domain": "templates",
+      "mapsTo": "site-ui",
+      "owns": ["templates/**", "static/**"],
+      "execution": "spawn_subagent"
+    },
+    {
+      "agentId": "lem-content",
+      "agentType": "researcher",
+      "domain": "content",
+      "mapsTo": "content-facts",
+      "owns": ["init_db.py"],
+      "execution": "spawn_subagent",
+      "notes": "Serial with lemur-data/quiz-content on init_db.py — never parallel write the same file"
+    },
+    {
+      "agentId": "lem-images",
+      "agentType": "coder",
+      "domain": "assets",
+      "mapsTo": "image-assets",
+      "owns": ["static/images/**"],
+      "execution": "spawn_subagent",
+      "notes": "Naming + missing-image audit; hand off new filenames to lemur-data"
+    },
+    {
+      "agentId": "lem-coder",
+      "agentType": "coder",
+      "domain": "general",
+      "mapsTo": "coder",
+      "execution": "spawn_subagent",
+      "notes": "Cross-cutting only when specialists do not fit"
+    },
+    {
+      "agentId": "lem-tester",
+      "agentType": "tester",
+      "domain": "test",
+      "mapsTo": "tester",
+      "execution": "spawn_subagent"
+    },
+    {
+      "agentId": "lem-reviewer",
+      "agentType": "reviewer",
+      "domain": "review",
+      "mapsTo": "reviewer",
+      "execution": "spawn_subagent",
+      "capability_mode": "read-only",
+      "notes": "Ship gate; does not author features"
+    },
+    {
+      "agentId": "lem-researcher",
+      "agentType": "researcher",
+      "domain": "research",
+      "mapsTo": "researcher",
+      "execution": "spawn_subagent",
+      "capability_mode": "read-only"
+    }
+  ],
+  "conflictRules": {
+    "init_db.py": "lemur-data OR content-facts OR quiz-content — never two writing in parallel",
+    "sameFile": "never assign the same path to two parallel agents",
+    "docs/": "only site-builder regenerates via build.py; no hand edits as SoT",
+    "static/images/**": "image-assets owns files; lemur-data owns image_filename strings in init_db"
+  },
+  "workflows": {
+    "new-species": ["lem-data", "lem-content", "lem-images", "lem-builder", "lem-tester"],
+    "quiz-pack": ["lem-quiz", "lem-flask", "lem-ui", "lem-tester"],
+    "visual": ["lem-ui", "lem-tester", "lem-reviewer"],
+    "api-routes": ["lem-flask", "lem-tester", "lem-reviewer"],
+    "build-pipeline": ["lem-builder", "lem-tester"],
+    "fact-cleanup": ["lem-content", "lem-data", "lem-tester"],
+    "full-ship": ["domain workers…", "lem-tester", "lem-reviewer", "python3 build.py"]
+  }
+}

@@ -1,0 +1,2 @@
+description = "SSG pipeline build.py / docs regen / GitHub Pages"
+default_capability_mode = "read-write"

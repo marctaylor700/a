@@ -1,0 +1,2 @@
+description = "Impact mapping; read-only"
+default_capability_mode = "read-only"

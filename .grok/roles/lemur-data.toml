@@ -1,0 +1,2 @@
+description = "Species catalogue / init_db.py specialist; serial with content-facts and quiz-content"
+default_capability_mode = "read-write"

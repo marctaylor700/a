@@ -1,0 +1,2 @@
+description = "Scientific fact quality; serial with lemur-data and quiz-content on init_db.py"
+default_capability_mode = "read-write"

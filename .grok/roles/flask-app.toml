@@ -1,0 +1,2 @@
+description = "Live Flask routes and JSON APIs in app.py"
+default_capability_mode = "read-write"

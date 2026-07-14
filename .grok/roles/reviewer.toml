@@ -1,0 +1,2 @@
+description = "Ship-gate review; read-only, does not author features"
+default_capability_mode = "read-only"

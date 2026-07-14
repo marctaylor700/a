@@ -1,0 +1,2 @@
+description = "static/images audit and naming; coordinates filenames with lemur-data"
+default_capability_mode = "read-write"

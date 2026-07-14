@@ -116,7 +116,12 @@ def conservation():
 
 @app.route("/quiz")
 def quiz():
-    return render_template("quiz.html")
+    return render_template("quiz.html", active_page="quiz")
+
+
+@app.route("/game")
+def game():
+    return render_template("game.html", active_page="game")
 
 
 @app.route("/api/quiz")

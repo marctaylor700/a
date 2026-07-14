@@ -1,0 +1,2 @@
+description = "Quiz bank in init_db.py; serial with lemur-data and content-facts"
+default_capability_mode = "read-write"

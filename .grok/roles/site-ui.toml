@@ -1,0 +1,2 @@
+description = "Jinja templates and design tokens; parallel-safe with data/builder when paths differ"
+default_capability_mode = "read-write"

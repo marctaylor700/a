@@ -1,0 +1,2 @@
+description = "Build verification specialist; does not implement product features"
+default_capability_mode = "read-write"
