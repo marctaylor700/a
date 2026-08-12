@@ -1,100 +1,257 @@
 {% extends "base.html" %}
-{% block title %}Canopy Bound — Lemur Facts{% endblock %}
-
-{% block content %}
-<div class="page-header fade-in">
-    <div class="page-eyebrow">Arcade &middot; Night rainforest</div>
-    <h2>Canopy Bound</h2>
-    <p>Race the rising fossa through Madagascar&rsquo;s moonlit canopy. Bound branch to branch, chain combos, and chase the moon.</p>
-</div>
-
-<div class="card slide-up">
-    <div class="game-shell" id="game-shell">
-        <canvas id="game-canvas" width="960" height="540"
-            role="img"
-            aria-label="Canopy Bound. Climb rainforest branches. Arrow keys or A D to move, Space or tap to jump. Outrun the fossa rising from below."></canvas>
-        <div class="game-hud" aria-hidden="true">
-            <div class="hud-left">
-                <span id="hud-combo" class="hud-combo"></span>
-                <span id="hud-mult" class="hud-mult"></span>
-            </div>
-            <div class="hud-right">
-                <span id="hud-score">0 m</span>
-                <span id="hud-best">BEST 0</span>
-            </div>
-        </div>
-        <div class="game-overlay" id="game-overlay">
-            <div class="eyeshine" aria-hidden="true"><i></i><i></i></div>
-            <h3 id="overlay-title">Canopy Bound</h3>
-            <p id="overlay-text">Arrow keys or A/D to sway. Space, up, or tap to leap. Land soft, chain combos, stay above the fossa&rsquo;s mist.</p>
-            <div class="overlay-keys" aria-hidden="true">
-                <kbd>A</kbd><kbd>D</kbd> move &nbsp;·&nbsp; <kbd>Space</kbd> jump &nbsp;·&nbsp; <kbd>Esc</kbd> pause
-            </div>
-            <button class="btn" id="overlay-btn" type="button">Enter the canopy</button>
-        </div>
-        <div class="sr-live" id="sr-live" aria-live="polite" aria-atomic="true"></div>
-    </div>
-</div>
-{% endblock %}
+{% block title %}Eyeshine — Lemur Facts{% endblock %}
 
 {% block extra_head %}
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.170.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.170.0/examples/jsm/"
+  }
+}
+</script>
 <style>
+    .hidden { display: none; }
+
+    main:has(#game-shell) {
+        max-width: min(1400px, 100%);
+        margin-top: 1rem;
+    }
+
+    main:has(#game-shell) .page-header {
+        margin-bottom: 0.65rem;
+    }
+
+    main:has(#game-shell) .page-header h2 {
+        font-size: clamp(1.4rem, 3vw, 1.9rem);
+        margin-bottom: 0.25rem;
+    }
+
+    main:has(#game-shell) .page-header p {
+        max-width: 78ch;
+        font-size: 0.9rem;
+        margin: 0;
+    }
+
     .game-shell {
         position: relative;
-        background: var(--night-deep);
         overflow: hidden;
-        border-radius: inherit;
+        height: min(78vh, 820px);
+        min-height: 420px;
+        border-radius: 6px;
+        background: var(--night-deep);
+        box-shadow: inset 0 0 80px rgba(14, 10, 22, 0.55);
     }
 
     #game-canvas {
-        display: block;
+        position: absolute;
+        inset: 0;
         width: 100%;
-        height: auto;
+        height: 100%;
+        display: block;
         touch-action: none;
-        cursor: pointer;
-        background: #14101d;
+        background: var(--night-deep);
     }
 
-    .game-hud {
+    #game-hud {
         position: absolute;
-        inset: 0.85rem 1rem auto;
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        gap: 1rem;
-        font-family: var(--font-mono);
-        font-size: 0.82rem;
-        letter-spacing: 0.08em;
-        color: var(--moon-dim);
+        inset: 0;
         pointer-events: none;
+        z-index: 2;
+        font-family: var(--font-mono);
+        letter-spacing: 0.1em;
+        color: var(--moon-dim);
+    }
+
+    #hud-damage {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        background: radial-gradient(
+            ellipse 72% 68% at 50% 50%,
+            transparent 38%,
+            rgba(194, 73, 42, 0.22) 68%,
+            rgba(158, 56, 32, 0.62) 100%
+        );
+        transition: opacity 0.25s ease;
+        z-index: 1;
+    }
+
+    .hud-top-left {
+        position: absolute;
+        top: 1.15rem;
+        left: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.55rem;
         z-index: 2;
     }
 
-    .hud-left, .hud-right {
+    #hud-compass {
+        position: relative;
+        width: 13.5rem;
+        height: 1.35rem;
+        overflow: hidden;
+        font-size: 0.78rem;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--moon);
+        text-align: center;
+        line-height: 1.25rem;
+        white-space: nowrap;
+        border-bottom: 1px solid var(--line);
+        text-shadow: 0 1px 8px rgba(14, 10, 22, 0.85);
+    }
+
+    #hud-compass::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        bottom: 0;
+        width: 1px;
+        height: 6px;
+        background: var(--eyeshine);
+        transform: translateX(-50%);
+    }
+
+    #hud-objective {
+        font-size: 0.72rem;
+        letter-spacing: 0.1em;
+        color: var(--moon);
+        max-width: 28ch;
+        line-height: 1.45;
+    }
+
+    #hud-log {
+        position: absolute;
+        top: 1.15rem;
+        right: 1.25rem;
+        text-align: right;
+        font-size: 1rem;
+        font-weight: 600;
+        letter-spacing: 0.14em;
+        color: var(--eyeshine);
+        z-index: 2;
+    }
+
+    #hud-log::before {
+        content: 'Census';
+        display: block;
+        font-size: 0.62rem;
+        font-weight: 400;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--moon-faint);
+        margin-bottom: 0.15rem;
+    }
+
+    .hud-meters {
+        position: absolute;
+        bottom: 1.2rem;
+        left: 1.25rem;
         display: flex;
         flex-direction: column;
-        gap: 0.25rem;
-        align-items: flex-end;
+        gap: 0.55rem;
+        z-index: 2;
+        padding: 0.55rem 0.7rem 0.6rem;
+        background: rgba(20, 16, 29, 0.72);
+        border: 1px solid var(--line);
+        border-radius: 3px;
     }
-    .hud-left { align-items: flex-start; }
 
-    .game-hud #hud-score { color: var(--eyeshine); font-weight: 600; font-size: 1.05rem; }
-    .game-hud .hud-combo {
-        color: var(--laterite, #c2492a);
-        font-weight: 700;
-        opacity: 0;
-        transform: translateY(-4px);
-        transition: opacity 0.15s, transform 0.15s;
+    .hud-meter {
+        display: flex;
+        flex-direction: column;
+        gap: 0.28rem;
     }
-    .game-hud .hud-combo.show { opacity: 1; transform: translateY(0); }
-    .game-hud .hud-mult {
-        color: var(--leaf, #9db878);
-        font-weight: 600;
-        min-height: 1.1em;
-        opacity: 0;
-        transition: opacity 0.15s;
+
+    .hud-meter-label {
+        font-size: 0.62rem;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--moon-faint);
     }
-    .game-hud .hud-mult.show { opacity: 1; }
+
+    .hud-track {
+        width: 11rem;
+        height: 5px;
+        background: rgba(20, 16, 29, 0.55);
+        border: 1px solid rgba(240, 231, 216, 0.22);
+        border-radius: 1px;
+        overflow: hidden;
+    }
+
+    #hud-spirit,
+    #hud-stamina {
+        display: block;
+        width: 100%;
+        height: 100%;
+        border-radius: 1px;
+        transition: width 0.18s ease;
+    }
+
+    #hud-spirit { background: var(--moon); }
+    #hud-stamina { background: var(--eyeshine); }
+
+    #hud-cross {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 10px;
+        height: 10px;
+        margin: -5px 0 0 -5px;
+        border: 1px solid rgba(239, 168, 59, 0.38);
+        border-radius: 50%;
+        z-index: 2;
+    }
+
+    #hud-cross::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 2px;
+        height: 2px;
+        margin: -1px 0 0 -1px;
+        border-radius: 50%;
+        background: var(--eyeshine);
+        box-shadow: 0 0 6px 1px rgba(239, 168, 59, 0.45);
+    }
+
+    #hud-fact {
+        position: absolute;
+        left: 50%;
+        bottom: 5.6rem;
+        transform: translateX(-50%);
+        max-width: min(42ch, calc(100% - 2.5rem));
+        padding: 0.4rem 0.8rem;
+        font-size: 0.76rem;
+        letter-spacing: 0.08em;
+        color: var(--moon);
+        text-align: center;
+        background: rgba(20, 16, 29, 0.72);
+        border: 1px solid var(--line);
+        border-radius: 3px;
+        z-index: 2;
+    }
+
+    #hud-prompt {
+        position: absolute;
+        left: 50%;
+        bottom: 2.15rem;
+        transform: translateX(-50%);
+        max-width: min(46ch, calc(100% - 2.5rem));
+        font-size: 0.72rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--eyeshine);
+        text-align: center;
+        z-index: 2;
+    }
+
+    #hud-fact:empty,
+    #hud-prompt:empty { display: none; }
 
     .game-overlay {
         position: absolute;
@@ -166,1148 +323,96 @@
     }
 
     @media (max-width: 600px) {
+        .game-shell {
+            min-height: 62vh;
+            height: 62vh;
+        }
+
+        .hud-top-left { top: 0.75rem; left: 0.8rem; }
+        #hud-log { top: 0.75rem; right: 0.8rem; font-size: 0.85rem; }
+        .hud-meters { bottom: 1.15rem; left: 0.65rem; padding: 0.45rem 0.55rem; }
+        #hud-compass { width: 9.5rem; font-size: 0.6rem; }
+        .hud-track { width: 7.5rem; height: 5px; }
+        #hud-objective,
+        #hud-prompt { font-size: 0.62rem; }
+        #hud-fact {
+            font-size: 0.66rem;
+            bottom: 4.4rem;
+            padding: 0.3rem 0.55rem;
+        }
         .game-overlay h3 { font-size: 1.35rem; }
         .game-overlay p { font-size: 0.88rem; }
-        .game-hud { font-size: 0.68rem; inset: 0.65rem; }
-        .game-hud #hud-score { font-size: 0.9rem; }
         .overlay-keys { display: none; }
     }
 
     @media (prefers-reduced-motion: reduce) {
-        .game-hud .hud-combo { transition: none; }
         .game-overlay { backdrop-filter: none; }
+        #hud-damage,
+        #hud-fact,
+        #hud-prompt { transition: none; }
+        #hud-cross::after { box-shadow: none; }
     }
 </style>
 {% endblock %}
 
+{% block content %}
+<div class="page-header fade-in">
+    <div class="page-eyebrow">Canopy &middot; Night census</div>
+    <h2>Eyeshine</h2>
+    <p>First-person night walk as a lemur. Greet glowing eyeshine to log real species. Bound from the fossa. No weapons.</p>
+</div>
+
+<div class="card slide-up">
+    <div class="game-shell" id="game-shell">
+        <canvas id="game-canvas"
+            aria-label="Eyeshine night census. First-person walk as a lemur through the Madagascar canopy. Greet glowing eyeshine to log real species. Bound from the fossa. No weapons. No shooting."></canvas>
+
+        <div id="game-hud" class="game-hud" aria-hidden="true">
+            <div id="hud-damage"></div>
+
+            <div class="hud-top-left">
+                <div id="hud-compass">W&nbsp;&nbsp;N&nbsp;&nbsp;E</div>
+                <div id="hud-objective">Greet 8 eyeshine · bound from the fossa</div>
+            </div>
+
+            <div id="hud-log">0 / 8</div>
+
+            <div id="hud-cross"></div>
+
+            <div class="hud-meters">
+                <div class="hud-meter">
+                    <span class="hud-meter-label">Spirit</span>
+                    <div class="hud-track"><div id="hud-spirit"></div></div>
+                </div>
+                <div class="hud-meter">
+                    <span class="hud-meter-label">Bound</span>
+                    <div class="hud-track"><div id="hud-stamina"></div></div>
+                </div>
+            </div>
+
+            <div id="hud-fact"></div>
+            <div id="hud-prompt"></div>
+        </div>
+
+        <div class="game-overlay" id="game-overlay">
+            <div class="eyeshine" aria-hidden="true"><i></i><i></i></div>
+            <h3 id="overlay-title">Eyeshine</h3>
+            <p id="overlay-text">WASD move · mouse look · Shift bound · Space leap · E greet · Esc pause</p>
+            <div class="overlay-keys" aria-hidden="true">
+                <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> move
+                &nbsp;·&nbsp; <kbd>Shift</kbd> bound
+                &nbsp;·&nbsp; <kbd>Space</kbd> leap
+                &nbsp;·&nbsp; <kbd>E</kbd> greet
+                &nbsp;·&nbsp; <kbd>Esc</kbd> pause
+            </div>
+            <button class="btn" id="overlay-btn" type="button">Enter the night</button>
+        </div>
+
+        <div class="sr-live" id="sr-live" aria-live="polite" aria-atomic="true"></div>
+    </div>
+</div>
+{% endblock %}
+
 {% block extra_scripts %}
-<script>
-(function () {
-    'use strict';
-
-    const canvas = document.getElementById('game-canvas');
-    const ctx = canvas.getContext('2d');
-    const overlay = document.getElementById('game-overlay');
-    const overlayTitle = document.getElementById('overlay-title');
-    const overlayText = document.getElementById('overlay-text');
-    const overlayBtn = document.getElementById('overlay-btn');
-    const hudScore = document.getElementById('hud-score');
-    const hudBest = document.getElementById('hud-best');
-    const hudCombo = document.getElementById('hud-combo');
-    const hudMult = document.getElementById('hud-mult');
-    const srLive = document.getElementById('sr-live');
-
-    const W = canvas.width;
-    const H = canvas.height;
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    const C = {
-        sky0: '#0e0a16', sky1: '#1a1328', sky2: '#2a1f3d',
-        moon: '#f0e7d8', eyeshine: '#efa83b',
-        laterite: '#c2492a', lateriteDeep: '#9e3820',
-        ink: '#14101d', leaf: '#9db878', leafDark: '#6a8a4a',
-        bark: '#5c4030', barkLight: '#7a5a40',
-        vine: '#4a6b3a', fruit: '#e05a3d', gold: '#efa83b',
-        lemur: '#c4a882', lemurLight: '#e8d4b8', lemurDark: '#2a2118',
-        stripe: '#1a1410', fossa: '#6b3a28', mist: 'rgba(122, 74, 48, 0.55)',
-        spring: '#7ec8e3', crumb: '#a06840'
-    };
-
-    /* ---------- Audio (tiny synth, no assets) ---------- */
-    var audioCtx = null;
-    var muted = false;
-
-    function ensureAudio() {
-        if (muted || reduceMotion) return null;
-        if (!audioCtx) {
-            try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
-            catch (e) { return null; }
-        }
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-        return audioCtx;
-    }
-
-    function blip(freq, dur, type, vol, slide) {
-        var ac = ensureAudio();
-        if (!ac) return;
-        var t0 = ac.currentTime;
-        var o = ac.createOscillator();
-        var g = ac.createGain();
-        o.type = type || 'sine';
-        o.frequency.setValueAtTime(freq, t0);
-        if (slide) o.frequency.exponentialRampToValueAtTime(Math.max(40, slide), t0 + dur);
-        g.gain.setValueAtTime(vol || 0.06, t0);
-        g.gain.exponentialRampToValueAtTime(0.001, t0 + dur);
-        o.connect(g); g.connect(ac.destination);
-        o.start(t0); o.stop(t0 + dur + 0.02);
-    }
-
-    function sfxJump() { blip(220, 0.09, 'triangle', 0.05, 440); }
-    function sfxLand() { blip(140, 0.06, 'sine', 0.04, 80); }
-    function sfxCollect() { blip(520, 0.08, 'sine', 0.05, 880); }
-    function sfxCombo() { blip(330, 0.05, 'square', 0.03); setTimeout(function () { blip(440, 0.08, 'square', 0.035); }, 40); }
-    function sfxSpring() { blip(180, 0.12, 'sawtooth', 0.03, 600); }
-    function sfxDeath() { blip(180, 0.25, 'sawtooth', 0.05, 50); }
-
-    /* ---------- State ---------- */
-    var state = 'ready';
-    var paused = false;
-    var frame = 0;
-    var camY = 0;
-    var camTarget = 0;
-    var maxHeight = 0;
-    var score = 0;
-    var best = 0;
-    var combo = 0;
-    var comboTimer = 0;
-    var multiplier = 1;
-    var fruitTaken = 0;
-    var screenShake = 0;
-    var flashGold = 0;
-    var lastDeath = null;
-    var keys = { left: false, right: false, jump: false, jumpBuffered: 0 };
-    var touchX = null;
-    var pointerJump = false;
-
-    try {
-        best = parseInt(localStorage.getItem('canopyBoundBest') || '0', 10) || 0;
-    } catch (e) {}
-    hudBest.textContent = 'BEST ' + best;
-
-    var player = {
-        x: W / 2, y: 0, vx: 0, vy: 0,
-        w: 28, h: 36,
-        onGround: false, facing: 1,
-        coyote: 0, jumpLock: 0,
-        squash: 1, trail: []
-    };
-
-    var platforms = [];
-    var pickups = [];
-    var particles = [];
-    var floatTexts = [];
-    var highestPlatformY = 0;
-    var fossaY = 80;
-    var fossaSpeed = 0.42;
-    var nextMilestone = 50;
-
-    var stars = [];
-    for (var i = 0; i < 70; i++) {
-        stars.push({
-            x: Math.random() * W,
-            y: Math.random() * 4000,
-            r: Math.random() * 1.4 + 0.3,
-            tw: Math.random() * Math.PI * 2,
-            layer: Math.random()
-        });
-    }
-
-    var fireflies = [];
-    for (var fi = 0; fi < 16; fi++) {
-        fireflies.push({
-            x: Math.random() * W,
-            y: -Math.random() * 3000,
-            p: Math.random() * Math.PI * 2,
-            s: 0.6 + Math.random() * 0.8
-        });
-    }
-
-    var farTrees = [];
-    for (var ti = 0; ti < 12; ti++) {
-        farTrees.push({
-            x: (ti / 12) * W + Math.random() * 40,
-            h: 80 + Math.random() * 120,
-            w: 18 + Math.random() * 22,
-            phase: Math.random() * 100
-        });
-    }
-
-    function announce(msg) {
-        srLive.textContent = '';
-        requestAnimationFrame(function () { srLive.textContent = msg; });
-    }
-
-    function worldToScreen(wy) {
-        return wy - camY + H * 0.55;
-    }
-
-    function rand(a, b) { return a + Math.random() * (b - a); }
-
-    function spawnPlatform(y, forced) {
-        var types = ['branch', 'branch', 'branch', 'spring', 'crumb', 'moving'];
-        var type = forced || types[(Math.random() * types.length) | 0];
-        var width = type === 'spring' ? rand(48, 64) : type === 'moving' ? rand(70, 100) : rand(70, 130);
-        var x = rand(24, W - width - 24);
-        // Keep somewhat reachable from previous
-        if (platforms.length) {
-            var prev = platforms[platforms.length - 1];
-            var maxGap = 150 + Math.min(80, maxHeight * 0.08);
-            x = Math.max(16, Math.min(W - width - 16, prev.x + rand(-maxGap, maxGap)));
-        }
-        var p = {
-            x: x, y: y, w: width, h: 12,
-            type: type,
-            phase: Math.random() * Math.PI * 2,
-            baseX: x,
-            moveAmp: type === 'moving' ? rand(30, 70) : 0,
-            life: type === 'crumb' ? 1 : 0,
-            shaking: 0,
-            broken: false
-        };
-        platforms.push(p);
-
-        // Pickups above some platforms
-        if (Math.random() < 0.45 && type !== 'crumb') {
-            var kind = Math.random() < 0.18 ? 'gold' : 'fruit';
-            pickups.push({
-                x: x + width / 2,
-                y: y - 28,
-                kind: kind,
-                bob: Math.random() * Math.PI * 2,
-                taken: false
-            });
-        }
-        highestPlatformY = Math.min(highestPlatformY, y);
-    }
-
-    function seedWorld() {
-        platforms = [];
-        pickups = [];
-        particles = [];
-        floatTexts = [];
-        highestPlatformY = 0;
-
-        // Starting ledge
-        platforms.push({
-            x: W / 2 - 90, y: 0, w: 180, h: 14,
-            type: 'branch', phase: 0, baseX: W / 2 - 90,
-            moveAmp: 0, life: 0, shaking: 0, broken: false
-        });
-
-        var y = -40;
-        for (var i = 0; i < 18; i++) {
-            y -= rand(55, 85);
-            var forced = i < 3 ? 'branch' : null;
-            spawnPlatform(y, forced);
-        }
-    }
-
-    function ensurePlatforms() {
-        var topNeeded = camY - H * 1.4;
-        while (highestPlatformY > topNeeded) {
-            var gap = rand(52, 88) + Math.min(40, maxHeight * 0.04);
-            spawnPlatform(highestPlatformY - gap, null);
-        }
-        // Cull far below
-        var cull = camY + H * 1.2;
-        platforms = platforms.filter(function (p) { return p.y < cull && !p.broken; });
-        pickups = pickups.filter(function (u) { return !u.taken && u.y < cull; });
-    }
-
-    function reset() {
-        frame = 0;
-        camY = 0;
-        camTarget = 0;
-        maxHeight = 0;
-        score = 0;
-        combo = 0;
-        comboTimer = 0;
-        multiplier = 1;
-        fruitTaken = 0;
-        screenShake = 0;
-        flashGold = 0;
-        lastDeath = null;
-        nextMilestone = 50;
-        fossaY = 120;
-        fossaSpeed = 0.38;
-        player.x = W / 2;
-        player.y = -20;
-        player.vx = 0;
-        player.vy = 0;
-        player.onGround = false;
-        player.facing = 1;
-        player.coyote = 0;
-        player.jumpLock = 0;
-        player.squash = 1;
-        player.trail = [];
-        keys.jumpBuffered = 0;
-        seedWorld();
-        hudScore.textContent = '0 m';
-        hudCombo.textContent = '';
-        hudCombo.classList.remove('show');
-        hudMult.textContent = '';
-        hudMult.classList.remove('show');
-    }
-
-    function start() {
-        reset();
-        state = 'playing';
-        overlay.classList.add('hidden');
-        ensureAudio();
-        announce('Climbing. Move with A D or arrows. Jump with space or tap.');
-    }
-
-    function setCombo(n) {
-        combo = n;
-        comboTimer = 90;
-        multiplier = 1 + Math.min(4, Math.floor(combo / 3) * 0.5);
-        if (combo >= 2) {
-            hudCombo.textContent = 'BOUND ×' + combo;
-            hudCombo.classList.add('show');
-            if (multiplier > 1) {
-                hudMult.textContent = '×' + multiplier.toFixed(1);
-                hudMult.classList.add('show');
-            }
-            if (combo % 3 === 0) sfxCombo();
-        }
-    }
-
-    function floatText(x, y, text, color) {
-        floatTexts.push({ x: x, y: y, text: text, color: color || C.eyeshine, life: 40 });
-    }
-
-    function burst(x, y, color, n, speed) {
-        if (reduceMotion) return;
-        n = n || 8;
-        speed = speed || 2.5;
-        for (var i = 0; i < n; i++) {
-            var a = Math.random() * Math.PI * 2;
-            var sp = Math.random() * speed;
-            particles.push({
-                x: x, y: y,
-                vx: Math.cos(a) * sp,
-                vy: Math.sin(a) * sp - 1,
-                life: 18 + Math.random() * 16,
-                r: 1.2 + Math.random() * 2.4,
-                c: color,
-                g: 0.08
-            });
-        }
-    }
-
-    function die(cause) {
-        state = 'dead';
-        lastDeath = cause || 'fossa';
-        sfxDeath();
-        if (score > best) {
-            best = score;
-            try { localStorage.setItem('canopyBoundBest', String(best)); } catch (e) {}
-        }
-        hudBest.textContent = 'BEST ' + best;
-
-        var soClose = best > 0 && score < best && (best - score) <= 15;
-        var beat = score >= best && score > 0;
-
-        if (lastDeath === 'fall') {
-            overlayTitle.textContent = soClose ? 'Almost…' : 'Lost the light';
-            overlayText.textContent = 'You fell into the dark. Height: ' + score + ' m · Best: ' + best + ' m';
-        } else {
-            overlayTitle.textContent = soClose ? 'So close!' : 'The fossa rose';
-            overlayText.textContent = 'Height: ' + score + ' m · Best: ' + best + ' m · The mist took you';
-        }
-        if (beat) overlayText.textContent += ' · New canopy record';
-        else if (soClose) overlayText.textContent += ' · Only ' + (best - score) + ' m from your best';
-        if (combo >= 5) overlayText.textContent += ' · Peak combo ×' + combo;
-        if (fruitTaken) overlayText.textContent += ' · ' + fruitTaken + ' fruit';
-
-        overlayBtn.textContent = 'Climb again';
-        overlay.classList.remove('hidden');
-        overlayBtn.focus();
-        announce('Run over. ' + score + ' meters. Best ' + best + '.');
-        screenShake = reduceMotion ? 0 : 12;
-        burst(player.x, player.y, C.laterite, 20, 4);
-    }
-
-    function tryJump() {
-        if (state !== 'playing' || paused) return;
-        if (player.jumpLock > 0) return;
-        if (player.onGround || player.coyote > 0) {
-            var boost = player._onSpring ? -16.5 : -12.8;
-            player.vy = boost;
-            player.onGround = false;
-            player.coyote = 0;
-            player.jumpLock = 8;
-            player.squash = 0.72;
-            player._onSpring = false;
-            if (boost < -14) sfxSpring(); else sfxJump();
-            burst(player.x, player.y + player.h / 2, C.leaf, 5, 1.8);
-        }
-    }
-
-    function updatePlayer() {
-        var move = 0;
-        if (keys.left) move -= 1;
-        if (keys.right) move += 1;
-        if (touchX !== null) {
-            var dx = touchX - player.x;
-            if (Math.abs(dx) > 8) move = dx > 0 ? 1 : -1;
-            // Soft aim toward finger
-            player.vx += dx * 0.012;
-        }
-
-        var accel = player.onGround ? 0.85 : 0.55;
-        var maxRun = player.onGround ? 6.2 : 5.6;
-        player.vx += move * accel;
-        player.vx *= player.onGround ? 0.82 : 0.92;
-        if (player.vx > maxRun) player.vx = maxRun;
-        if (player.vx < -maxRun) player.vx = -maxRun;
-        if (Math.abs(player.vx) > 0.3) player.facing = player.vx > 0 ? 1 : -1;
-
-        // Gravity — slightly floaty for AAA feel
-        player.vy += player.vy > 0 ? 0.48 : 0.42;
-        if (player.vy > 14) player.vy = 14;
-
-        player.x += player.vx;
-        player.y += player.vy;
-
-        // Wrap horizontally (infinite canopy feel)
-        if (player.x < -20) player.x = W + 20;
-        if (player.x > W + 20) player.x = -20;
-
-        if (player.jumpLock > 0) player.jumpLock--;
-        if (player.coyote > 0) player.coyote--;
-        if (keys.jumpBuffered > 0) {
-            keys.jumpBuffered--;
-            if (player.onGround || player.coyote > 0) tryJump();
-        }
-
-        player.squash += (1 - player.squash) * 0.16;
-
-        // Motion trail
-        if (!reduceMotion && (Math.abs(player.vx) > 2 || player.vy < -4)) {
-            player.trail.push({ x: player.x, y: player.y, life: 10 });
-            if (player.trail.length > 8) player.trail.shift();
-        } else if (player.trail.length) {
-            player.trail.shift();
-        }
-        for (var t = 0; t < player.trail.length; t++) player.trail[t].life--;
-
-        // Platform collisions (one-way from above)
-        var wasGround = player.onGround;
-        player.onGround = false;
-        player._onSpring = false;
-
-        if (player.vy >= 0) {
-            var feetPrev = player.y + player.h / 2 - player.vy;
-            var feet = player.y + player.h / 2;
-            for (var i = 0; i < platforms.length; i++) {
-                var p = platforms[i];
-                if (p.broken) continue;
-                var px = p.x;
-                if (p.type === 'moving') {
-                    px = p.baseX + Math.sin(frame * 0.035 + p.phase) * p.moveAmp;
-                    p.x = px;
-                }
-                if (player.x + player.w / 2 - 4 < px || player.x - player.w / 2 + 4 > px + p.w) continue;
-                if (feetPrev <= p.y + 4 && feet >= p.y - 2 && player.y < p.y + 20) {
-                    player.y = p.y - player.h / 2;
-                    player.vy = 0;
-                    player.onGround = true;
-                    player.coyote = 8;
-
-                    if (!wasGround) {
-                        player.squash = 1.22;
-                        sfxLand();
-                        burst(player.x, p.y, C.barkLight, 6, 1.6);
-                        setCombo(combo + 1);
-                        if (combo >= 2) {
-                            var bonus = Math.floor(2 * multiplier);
-                            score += bonus;
-                            floatText(player.x, player.y - 30, '+' + bonus, C.leaf);
-                        }
-                    }
-
-                    if (p.type === 'spring') {
-                        player._onSpring = true;
-                        // Auto-launch spring bounce
-                        player.vy = -16.8;
-                        player.onGround = false;
-                        player.coyote = 0;
-                        player.squash = 0.65;
-                        sfxSpring();
-                        burst(player.x, p.y, C.spring, 10, 3);
-                        setCombo(combo + 1);
-                        floatText(player.x, p.y - 20, 'BOUNCE', C.spring);
-                    }
-
-                    if (p.type === 'crumb') {
-                        p.shaking = 20;
-                        p.life -= 0.02;
-                        if (p.life <= 0) {
-                            p.broken = true;
-                            burst(px + p.w / 2, p.y, C.crumb, 12, 2.5);
-                            player.onGround = false;
-                        }
-                    }
-                }
-            }
-        } else {
-            // Update moving platforms even when airborne
-            for (var m = 0; m < platforms.length; m++) {
-                if (platforms[m].type === 'moving') {
-                    platforms[m].x = platforms[m].baseX + Math.sin(frame * 0.035 + platforms[m].phase) * platforms[m].moveAmp;
-                }
-            }
-        }
-
-        if (wasGround && !player.onGround) player.coyote = 8;
-
-        // Pickups
-        for (var u = 0; u < pickups.length; u++) {
-            var pk = pickups[u];
-            if (pk.taken) continue;
-            var dx2 = player.x - pk.x;
-            var dy2 = player.y - pk.y;
-            if (dx2 * dx2 + dy2 * dy2 < 28 * 28) {
-                pk.taken = true;
-                fruitTaken++;
-                sfxCollect();
-                var pts = pk.kind === 'gold' ? Math.floor(15 * multiplier) : Math.floor(5 * multiplier);
-                score += pts;
-                if (pk.kind === 'gold') {
-                    setCombo(combo + 2);
-                    flashGold = reduceMotion ? 0 : 16;
-                    floatText(pk.x, pk.y, '+' + pts + ' GOLD', C.gold);
-                    burst(pk.x, pk.y, C.gold, 14, 3.2);
-                } else {
-                    floatText(pk.x, pk.y, '+' + pts, C.fruit);
-                    burst(pk.x, pk.y, C.fruit, 8, 2.2);
-                }
-            }
-        }
-
-        // Height score
-        var height = Math.max(0, Math.floor(-player.y / 10));
-        if (height > maxHeight) {
-            var gained = height - maxHeight;
-            maxHeight = height;
-            score += Math.floor(gained * multiplier);
-        }
-        hudScore.textContent = score + ' m';
-
-        // Milestones
-        if (maxHeight >= nextMilestone) {
-            floatText(player.x, player.y - 40, nextMilestone + ' m', C.moon);
-            announce(nextMilestone + ' meters');
-            nextMilestone += 50;
-            fossaSpeed += 0.04;
-            flashGold = reduceMotion ? 0 : 10;
-        }
-
-        // Fossa mist rises
-        var chaseFloor = Math.max(player.y + 220, -maxHeight * 10 + 200);
-        // Fossa tracks below player but rises over time
-        var desiredFossa = player.y + 280 - maxHeight * 0.35;
-        fossaY += (desiredFossa - fossaY) * 0.01;
-        fossaY -= fossaSpeed; // steadily climbs (negative Y is up)
-        // Never get too far below start early game
-        if (frame < 120) fossaY = Math.max(fossaY, 100);
-
-        if (player.y + player.h / 2 > fossaY - 8) {
-            die('fossa');
-            return;
-        }
-        // Fell way below camera / soft fail
-        if (player.y > camY + H * 0.85) {
-            die('fall');
-            return;
-        }
-
-        camTarget = player.y;
-        camY += (camTarget - camY) * (reduceMotion ? 1 : 0.12);
-
-        ensurePlatforms();
-    }
-
-    function updateFX() {
-        if (comboTimer > 0) {
-            comboTimer--;
-            if (comboTimer === 0) {
-                combo = 0;
-                multiplier = 1;
-                hudCombo.classList.remove('show');
-                hudMult.classList.remove('show');
-                hudMult.textContent = '';
-            }
-        }
-        if (screenShake > 0) screenShake--;
-        if (flashGold > 0) flashGold--;
-
-        for (var p = particles.length - 1; p >= 0; p--) {
-            var pt = particles[p];
-            pt.x += pt.vx;
-            pt.y += pt.vy;
-            pt.vy += pt.g || 0.1;
-            pt.life--;
-            if (pt.life <= 0) particles.splice(p, 1);
-        }
-        for (var f = floatTexts.length - 1; f >= 0; f--) {
-            floatTexts[f].y -= 0.8;
-            floatTexts[f].life--;
-            if (floatTexts[f].life <= 0) floatTexts.splice(f, 1);
-        }
-        for (var i = 0; i < platforms.length; i++) {
-            if (platforms[i].shaking > 0) platforms[i].shaking--;
-        }
-    }
-
-    /* ---------- Draw ---------- */
-    function drawBackdrop() {
-        var g = ctx.createLinearGradient(0, 0, 0, H);
-        g.addColorStop(0, C.sky0);
-        g.addColorStop(0.45, C.sky1);
-        g.addColorStop(1, C.sky2);
-        ctx.fillStyle = g;
-        ctx.fillRect(0, 0, W, H);
-
-        // Moon
-        var moonY = 70 + Math.sin(frame * 0.004) * 3;
-        ctx.save();
-        ctx.globalAlpha = 0.15;
-        ctx.fillStyle = C.moon;
-        ctx.beginPath();
-        ctx.arc(W - 120, moonY, 48, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.globalAlpha = 0.92;
-        ctx.beginPath();
-        ctx.arc(W - 120, moonY, 28, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = C.sky1;
-        ctx.globalAlpha = 0.35;
-        ctx.beginPath();
-        ctx.arc(W - 128, moonY - 6, 8, 0, Math.PI * 2);
-        ctx.arc(W - 110, moonY + 8, 5, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.restore();
-
-        // Stars parallax
-        for (var si = 0; si < stars.length; si++) {
-            var s = stars[si];
-            var sy = ((s.y - camY * (0.15 + s.layer * 0.1)) % (H + 40) + H + 40) % (H + 40) - 20;
-            ctx.globalAlpha = 0.25 + 0.45 * Math.abs(Math.sin(frame * 0.012 + s.tw));
-            ctx.fillStyle = C.moon;
-            ctx.fillRect(s.x, sy, s.r, s.r);
-        }
-        ctx.globalAlpha = 1;
-
-        // Far canopy silhouettes
-        ctx.fillStyle = 'rgba(20, 16, 29, 0.65)';
-        for (var ti = 0; ti < farTrees.length; ti++) {
-            var t = farTrees[ti];
-            var scroll = (camY * 0.22 + t.phase) % (H + 200);
-            var ty = H - ((scroll % (H + 160)));
-            ctx.beginPath();
-            ctx.moveTo(t.x, ty + 40);
-            ctx.lineTo(t.x - t.w, ty - t.h * 0.3);
-            ctx.lineTo(t.x - t.w * 0.3, ty - t.h * 0.55);
-            ctx.lineTo(t.x + t.w * 0.2, ty - t.h);
-            ctx.lineTo(t.x + t.w, ty - t.h * 0.4);
-            ctx.lineTo(t.x + t.w * 0.5, ty + 40);
-            ctx.closePath();
-            ctx.fill();
-        }
-
-        // Atmospheric haze bands
-        ctx.fillStyle = 'rgba(157, 184, 120, 0.03)';
-        for (var hz = 0; hz < 4; hz++) {
-            var hy = ((hz * 140 - camY * 0.3) % H + H) % H;
-            ctx.fillRect(0, hy, W, 40);
-        }
-
-        // Fireflies
-        for (var ffi = 0; ffi < fireflies.length; ffi++) {
-            var f = fireflies[ffi];
-            var fy = worldToScreen(f.y + Math.sin(frame * 0.02 + f.p) * 12);
-            if (fy < -20 || fy > H + 20) continue;
-            var fx = (f.x + Math.cos(frame * 0.015 + f.p) * 20 + W) % W;
-            ctx.globalAlpha = 0.25 + 0.55 * Math.abs(Math.sin(frame * 0.025 + f.p));
-            ctx.fillStyle = C.eyeshine;
-            ctx.beginPath();
-            ctx.arc(fx, fy, 1.6 * f.s, 0, Math.PI * 2);
-            ctx.fill();
-            if (!reduceMotion) {
-                ctx.globalAlpha *= 0.3;
-                ctx.beginPath();
-                ctx.arc(fx, fy, 5 * f.s, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
-        ctx.globalAlpha = 1;
-    }
-
-    function drawPlatform(p) {
-        if (p.broken) return;
-        var sy = worldToScreen(p.y);
-        if (sy < -40 || sy > H + 40) return;
-        var px = p.x;
-        if (p.shaking) px += Math.sin(frame * 1.2) * 2.5;
-
-        ctx.save();
-        ctx.translate(px, sy);
-
-        if (p.type === 'spring') {
-            ctx.fillStyle = C.spring;
-            ctx.globalAlpha = 0.25;
-            ctx.fillRect(4, -6, p.w - 8, 6);
-            ctx.globalAlpha = 1;
-            ctx.fillStyle = '#5a9ab0';
-            ctx.fillRect(0, 0, p.w, 8);
-            ctx.fillStyle = C.spring;
-            ctx.fillRect(2, -4, p.w - 4, 5);
-            // Coil marks
-            ctx.strokeStyle = 'rgba(20,16,29,0.35)';
-            ctx.lineWidth = 1.5;
-            for (var c = 8; c < p.w - 8; c += 10) {
-                ctx.beginPath();
-                ctx.moveTo(c, 1);
-                ctx.lineTo(c + 4, 7);
-                ctx.stroke();
-            }
-        } else if (p.type === 'crumb') {
-            ctx.fillStyle = C.crumb;
-            ctx.fillRect(0, 0, p.w, 10);
-            ctx.fillStyle = 'rgba(20,16,29,0.35)';
-            ctx.fillRect(6, 3, p.w * 0.3, 2);
-            ctx.fillRect(p.w * 0.5, 5, p.w * 0.25, 2);
-            if (p.shaking) {
-                ctx.strokeStyle = C.laterite;
-                ctx.globalAlpha = 0.5;
-                ctx.strokeRect(-1, -1, p.w + 2, 12);
-            }
-        } else if (p.type === 'moving') {
-            ctx.fillStyle = C.bark;
-            ctx.fillRect(0, 0, p.w, 11);
-            ctx.fillStyle = C.leafDark;
-            ctx.fillRect(0, -3, p.w, 5);
-            ctx.fillStyle = C.leaf;
-            ctx.globalAlpha = 0.7;
-            ctx.beginPath();
-            ctx.ellipse(p.w * 0.3, -4, 14, 6, -0.2, 0, Math.PI * 2);
-            ctx.ellipse(p.w * 0.7, -5, 12, 5, 0.15, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.globalAlpha = 1;
-            // Motion dots
-            ctx.fillStyle = C.eyeshine;
-            ctx.globalAlpha = 0.5 + 0.3 * Math.sin(frame * 0.1 + p.phase);
-            ctx.beginPath();
-            ctx.arc(8, 5, 2, 0, Math.PI * 2);
-            ctx.arc(p.w - 8, 5, 2, 0, Math.PI * 2);
-            ctx.fill();
-        } else {
-            // Solid branch + foliage
-            ctx.fillStyle = C.bark;
-            ctx.beginPath();
-            ctx.moveTo(0, 4);
-            ctx.quadraticCurveTo(p.w * 0.5, -2, p.w, 4);
-            ctx.lineTo(p.w, 12);
-            ctx.quadraticCurveTo(p.w * 0.5, 8, 0, 12);
-            ctx.closePath();
-            ctx.fill();
-            ctx.fillStyle = C.barkLight;
-            ctx.fillRect(4, 2, p.w - 8, 3);
-            ctx.fillStyle = C.leafDark;
-            ctx.beginPath();
-            ctx.ellipse(p.w * 0.25, 0, 16, 8, -0.3, 0, Math.PI * 2);
-            ctx.ellipse(p.w * 0.55, -2, 18, 9, 0.1, 0, Math.PI * 2);
-            ctx.ellipse(p.w * 0.8, 1, 12, 6, 0.25, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.fillStyle = C.leaf;
-            ctx.globalAlpha = 0.55;
-            ctx.beginPath();
-            ctx.ellipse(p.w * 0.4, -4, 14, 6, -0.1, 0, Math.PI * 2);
-            ctx.fill();
-        }
-        ctx.restore();
-        ctx.globalAlpha = 1;
-    }
-
-    function drawPickup(pk) {
-        if (pk.taken) return;
-        var sy = worldToScreen(pk.y + Math.sin(frame * 0.06 + pk.bob) * 4);
-        if (sy < -30 || sy > H + 30) return;
-        ctx.save();
-        ctx.translate(pk.x, sy);
-        if (pk.kind === 'gold') {
-            ctx.globalAlpha = 0.25;
-            ctx.fillStyle = C.gold;
-            ctx.beginPath();
-            ctx.arc(0, 0, 14, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.globalAlpha = 1;
-            ctx.beginPath();
-            ctx.arc(0, 0, 7, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.fillStyle = C.moon;
-            ctx.beginPath();
-            ctx.arc(-2, -2, 2.5, 0, Math.PI * 2);
-            ctx.fill();
-        } else {
-            ctx.fillStyle = C.fruit;
-            ctx.beginPath();
-            ctx.ellipse(0, 2, 7, 8, 0, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.fillStyle = C.leaf;
-            ctx.beginPath();
-            ctx.ellipse(3, -6, 5, 3, 0.5, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.strokeStyle = C.bark;
-            ctx.lineWidth = 1.5;
-            ctx.beginPath();
-            ctx.moveTo(0, -6);
-            ctx.lineTo(0, -11);
-            ctx.stroke();
-        }
-        ctx.restore();
-    }
-
-    function drawLemur() {
-        var sy = worldToScreen(player.y);
-        var sx = player.x;
-        var airborne = !player.onGround;
-        var bob = airborne ? 0 : Math.abs(Math.sin(frame * 0.25)) * 1.5;
-        var run = airborne ? 0 : Math.sin(frame * 0.35) * Math.min(1, Math.abs(player.vx) / 4);
-
-        // Trail
-        if (!reduceMotion) {
-            for (var i = 0; i < player.trail.length; i++) {
-                var tr = player.trail[i];
-                if (tr.life <= 0) continue;
-                ctx.globalAlpha = tr.life / 20;
-                ctx.fillStyle = C.lemurLight;
-                ctx.beginPath();
-                ctx.ellipse(tr.x, worldToScreen(tr.y), 6, 10, 0, 0, Math.PI * 2);
-                ctx.fill();
-            }
-            ctx.globalAlpha = 1;
-        }
-
-        ctx.save();
-        ctx.translate(sx, sy - bob);
-        ctx.scale(player.facing * player.squash, 2 - player.squash);
-        if (airborne) ctx.rotate(player.vy < 0 ? -0.15 : 0.2);
-
-        // Ringed tail
-        ctx.lineCap = 'round';
-        ctx.lineWidth = 8;
-        var tailSwing = airborne ? -0.8 : run * 0.5;
-        var tx = -10, ty = 4;
-        for (var seg = 0; seg < 6; seg++) {
-            ctx.strokeStyle = seg % 2 === 0 ? C.stripe : C.lemurLight;
-            ctx.beginPath();
-            var a0 = tailSwing - 0.4 + seg * 0.25;
-            var a1 = tailSwing - 0.4 + (seg + 1) * 0.25;
-            ctx.arc(tx - 8, ty + 4, 16 + seg * 2, a0, a1);
-            ctx.stroke();
-        }
-
-        // Legs
-        ctx.strokeStyle = C.lemur;
-        ctx.lineWidth = 5;
-        ctx.beginPath();
-        ctx.moveTo(-4, 8);
-        ctx.lineTo(-6 - run * 6, 16);
-        ctx.moveTo(4, 8);
-        ctx.lineTo(6 + run * 6, 16);
-        ctx.stroke();
-
-        // Body
-        ctx.fillStyle = C.lemur;
-        ctx.beginPath();
-        ctx.ellipse(0, 0, 11, 14, 0, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = C.lemurLight;
-        ctx.beginPath();
-        ctx.ellipse(3, 2, 5, 8, 0.1, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Arms
-        ctx.strokeStyle = C.lemur;
-        ctx.lineWidth = 4;
-        ctx.beginPath();
-        ctx.moveTo(-6, -6);
-        ctx.lineTo(-12 - run * 3, airborne ? -14 : 2);
-        ctx.moveTo(6, -6);
-        ctx.lineTo(12 + run * 3, airborne ? -12 : 4);
-        ctx.stroke();
-
-        // Head
-        ctx.fillStyle = C.lemurLight;
-        ctx.beginPath();
-        ctx.arc(2, -16, 10, 0, Math.PI * 2);
-        ctx.fill();
-        // Dark mask
-        ctx.fillStyle = C.lemurDark;
-        ctx.beginPath();
-        ctx.ellipse(5, -15, 6, 5, 0, 0, Math.PI * 2);
-        ctx.fill();
-        // Ears
-        ctx.fillStyle = C.lemur;
-        ctx.beginPath();
-        ctx.ellipse(-4, -24, 4, 5, -0.3, 0, Math.PI * 2);
-        ctx.ellipse(6, -25, 4, 5, 0.3, 0, Math.PI * 2);
-        ctx.fill();
-        // Eyeshine
-        ctx.fillStyle = C.eyeshine;
-        ctx.beginPath();
-        ctx.arc(7, -16, 2.2, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = C.moon;
-        ctx.beginPath();
-        ctx.arc(7.5, -16.5, 0.8, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.restore();
-    }
-
-    function drawFossaMist() {
-        var sy = worldToScreen(fossaY);
-        if (sy > H + 60) return;
-
-        // Rising danger gradient
-        var grd = ctx.createLinearGradient(0, sy - 80, 0, H);
-        grd.addColorStop(0, 'rgba(107, 58, 40, 0)');
-        grd.addColorStop(0.25, 'rgba(107, 58, 40, 0.35)');
-        grd.addColorStop(0.55, 'rgba(80, 40, 28, 0.72)');
-        grd.addColorStop(1, 'rgba(40, 18, 14, 0.92)');
-        ctx.fillStyle = grd;
-        ctx.fillRect(0, Math.min(sy - 80, H), W, H);
-
-        // Fossa silhouette prowling the mist line
-        if (sy < H + 20 && sy > -40) {
-            var fx = (W * 0.5) + Math.sin(frame * 0.04) * (W * 0.28);
-            ctx.save();
-            ctx.translate(fx, sy - 10);
-            ctx.globalAlpha = 0.85;
-            ctx.fillStyle = C.fossa;
-            ctx.beginPath();
-            ctx.ellipse(0, 0, 36, 14, 0, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.beginPath();
-            ctx.arc(-30, -4, 12, 0, Math.PI * 2);
-            ctx.fill();
-            // Ears
-            ctx.beginPath();
-            ctx.moveTo(-38, -12); ctx.lineTo(-34, -22); ctx.lineTo(-28, -12);
-            ctx.moveTo(-26, -14); ctx.lineTo(-22, -22); ctx.lineTo(-18, -12);
-            ctx.fill();
-            // Eyes
-            ctx.fillStyle = C.eyeshine;
-            ctx.beginPath();
-            ctx.arc(-34, -5, 2.5, 0, Math.PI * 2);
-            ctx.arc(-26, -5, 2.5, 0, Math.PI * 2);
-            ctx.fill();
-            // Tail
-            ctx.strokeStyle = C.fossa;
-            ctx.lineWidth = 6;
-            ctx.lineCap = 'round';
-            ctx.beginPath();
-            ctx.moveTo(30, 0);
-            ctx.quadraticCurveTo(50, -8 + Math.sin(frame * 0.1) * 6, 62, -18);
-            ctx.stroke();
-            ctx.restore();
-        }
-
-        // Warning vignette when close
-        var danger = worldToScreen(fossaY) - worldToScreen(player.y);
-        if (danger < 160) {
-            var intensity = Math.max(0, 1 - danger / 160) * 0.35;
-            ctx.fillStyle = 'rgba(194, 73, 42,' + intensity + ')';
-            ctx.fillRect(0, H - 30, W, 30);
-        }
-    }
-
-    function drawParticles() {
-        for (var i = 0; i < particles.length; i++) {
-            var p = particles[i];
-            var sy = worldToScreen(p.y);
-            ctx.globalAlpha = Math.max(0, p.life / 28);
-            ctx.fillStyle = p.c;
-            ctx.beginPath();
-            ctx.arc(p.x, sy, p.r, 0, Math.PI * 2);
-            ctx.fill();
-        }
-        ctx.globalAlpha = 1;
-    }
-
-    function drawFloatTexts() {
-        ctx.font = '700 13px ui-sans-serif, system-ui, sans-serif';
-        ctx.textAlign = 'center';
-        for (var i = 0; i < floatTexts.length; i++) {
-            var f = floatTexts[i];
-            ctx.globalAlpha = Math.max(0, f.life / 40);
-            ctx.fillStyle = f.color;
-            ctx.fillText(f.text, f.x, worldToScreen(f.y));
-        }
-        ctx.globalAlpha = 1;
-    }
-
-    function drawVignette() {
-        var v = ctx.createRadialGradient(W / 2, H * 0.45, H * 0.2, W / 2, H * 0.5, H * 0.75);
-        v.addColorStop(0, 'rgba(0,0,0,0)');
-        v.addColorStop(1, 'rgba(14, 10, 22, 0.45)');
-        ctx.fillStyle = v;
-        ctx.fillRect(0, 0, W, H);
-    }
-
-    function render() {
-        ctx.save();
-        if (screenShake > 0 && !reduceMotion) {
-            ctx.translate(
-                (Math.random() - 0.5) * screenShake,
-                (Math.random() - 0.5) * screenShake * 0.6
-            );
-        }
-
-        drawBackdrop();
-
-        // Depth-sort-ish: platforms then pickups then lemur
-        for (var i = 0; i < platforms.length; i++) drawPlatform(platforms[i]);
-        for (var j = 0; j < pickups.length; j++) drawPickup(pickups[j]);
-        drawParticles();
-        if (state !== 'ready') drawLemur();
-        else {
-            // Idle pose on start ledge for title feel
-            player.y = -20;
-            player.x = W / 2;
-            camY = 0;
-            drawLemur();
-        }
-        drawFossaMist();
-        drawFloatTexts();
-        drawVignette();
-
-        if (flashGold > 0 && !reduceMotion) {
-            ctx.fillStyle = 'rgba(239,168,59,' + (0.06 + flashGold * 0.01) + ')';
-            ctx.fillRect(0, 0, W, H);
-        }
-
-        if (paused && state === 'playing') {
-            ctx.fillStyle = 'rgba(20,16,29,0.5)';
-            ctx.fillRect(0, 0, W, H);
-            ctx.fillStyle = C.moon;
-            ctx.font = '600 20px ui-sans-serif, system-ui, sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText('Paused', W / 2, H / 2);
-            ctx.font = '400 13px ui-sans-serif, system-ui, sans-serif';
-            ctx.fillStyle = C.moon;
-            ctx.globalAlpha = 0.6;
-            ctx.fillText('Press Esc or tap to resume', W / 2, H / 2 + 28);
-            ctx.globalAlpha = 1;
-        }
-
-        // Ready-state ambient lemur on branch already drawn
-        if (state === 'ready') {
-            // Soft title glow on canvas
-            ctx.fillStyle = 'rgba(239,168,59,0.08)';
-            ctx.beginPath();
-            ctx.arc(W / 2, worldToScreen(player.y) - 10, 50 + Math.sin(frame * 0.04) * 6, 0, Math.PI * 2);
-            ctx.fill();
-        }
-
-        ctx.restore();
-    }
-
-    function update() {
-        if (paused) return;
-        frame++;
-        updatePlayer();
-        if (state === 'playing') updateFX();
-    }
-
-    function loop() {
-        if (state === 'playing') update();
-        else {
-            frame++;
-            // Idle sway on title
-            if (state === 'ready') {
-                player.squash = 1 + Math.sin(frame * 0.06) * 0.03;
-            }
-        }
-        render();
-        requestAnimationFrame(loop);
-    }
-
-    function pressJump() {
-        if (state === 'ready' || state === 'dead') { start(); return; }
-        if (paused) { paused = false; announce('Resumed'); return; }
-        keys.jumpBuffered = 10;
-        tryJump();
-    }
-
-    document.addEventListener('keydown', function (e) {
-        if (e.code === 'ArrowLeft' || e.code === 'KeyA') { keys.left = true; e.preventDefault(); }
-        if (e.code === 'ArrowRight' || e.code === 'KeyD') { keys.right = true; e.preventDefault(); }
-        if (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW') {
-            if (e.target && e.target.matches && e.target.matches('input, textarea')) return;
-            if (e.target === overlayBtn && e.code === 'Space') return;
-            e.preventDefault();
-            if (!e.repeat) pressJump();
-            keys.jump = true;
-        }
-        if (e.code === 'Escape' && state === 'playing') {
-            paused = !paused;
-            announce(paused ? 'Paused' : 'Resumed');
-        }
-        if (e.code === 'KeyM') muted = !muted;
-    });
-
-    document.addEventListener('keyup', function (e) {
-        if (e.code === 'ArrowLeft' || e.code === 'KeyA') keys.left = false;
-        if (e.code === 'ArrowRight' || e.code === 'KeyD') keys.right = false;
-        if (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW') keys.jump = false;
-    });
-
-    function pointerPos(e) {
-        var rect = canvas.getBoundingClientRect();
-        return {
-            x: (e.clientX - rect.left) * (W / rect.width),
-            y: (e.clientY - rect.top) * (H / rect.height)
-        };
-    }
-
-    canvas.addEventListener('pointerdown', function (e) {
-        e.preventDefault();
-        canvas.setPointerCapture(e.pointerId);
-        var p = pointerPos(e);
-        touchX = p.x;
-        pointerJump = true;
-        pressJump();
-    });
-    canvas.addEventListener('pointermove', function (e) {
-        if (touchX === null) return;
-        touchX = pointerPos(e).x;
-    });
-    canvas.addEventListener('pointerup', function () {
-        touchX = null;
-        pointerJump = false;
-    });
-    canvas.addEventListener('pointercancel', function () {
-        touchX = null;
-    });
-
-    overlayBtn.addEventListener('click', function (e) {
-        e.stopPropagation();
-        pressJump();
-    });
-    overlay.addEventListener('pointerdown', function (e) {
-        if (e.target === overlayBtn) return;
-        e.preventDefault();
-        pressJump();
-    });
-
-    window.addEventListener('blur', function () {
-        if (state === 'playing') paused = true;
-    });
-    document.addEventListener('visibilitychange', function () {
-        if (document.hidden && state === 'playing') paused = true;
-    });
-
-    // Init visual
-    seedWorld();
-    player.y = -20;
-    player.x = W / 2;
-    render();
-    requestAnimationFrame(loop);
-})();
-</script>
+<script type="module" src="js/game/main.js"></script>
 {% endblock %}

@@ -2,7 +2,7 @@ import os
 import sqlite3
 import random
 
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request, send_from_directory
 
 from init_db import init_db, DB_PATH
 
@@ -122,6 +122,16 @@ def quiz():
 @app.route("/game")
 def game():
     return render_template("game.html", active_page="game")
+
+
+@app.route("/js/<path:filename>")
+def serve_js(filename):
+    return send_from_directory(os.path.join(app.root_path, "static", "js"), filename)
+
+
+@app.route("/images/<path:filename>")
+def serve_images(filename):
+    return send_from_directory(os.path.join(app.root_path, "static", "images"), filename)
 
 
 @app.route("/api/quiz")

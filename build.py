@@ -170,6 +170,15 @@ def build_site():
         shutil.copytree(src_images, dst_images)
         print(f"  Copied {len(os.listdir(dst_images))} images")
 
+    # Copy client JS (Eyeshine game and any other static scripts)
+    src_js = os.path.join(STATIC_DIR, "js")
+    dst_js = os.path.join(OUTPUT_DIR, "js")
+    if os.path.exists(src_js):
+        shutil.copytree(src_js, dst_js)
+        print(f"  Copied JS tree to {os.path.relpath(dst_js, BASE_DIR)}/")
+    else:
+        print(f"  Warning: {os.path.relpath(src_js, BASE_DIR)}/ not found; skipping JS copy")
+
     # Set up Jinja2 environment
     env = Environment(loader=FileSystemLoader(TEMPLATES_DIR))
 
